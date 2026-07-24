@@ -155,15 +155,38 @@ namespace Gasolinera.Controllers
 
         private List<SelectListItem> ObtenerEmpleadosVentas()
         {
-            var empleados = _contexto.Empleados
-                .Select(e => new SelectListItem
-                {
-                    Value = e.IdEmpleado.ToString(),
-                    Text = e.NombreCompleto + " (ID: " + e.IdEmpleado + ")"
-                })
-                .ToList();
+            List<SelectListItem> empleados;
 
-            empleados.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un empleado --" });
+            // Si existe la base de datos y tiene empleados
+            if (_contexto.Empleados.Any())
+            {
+                empleados = _contexto.Empleados
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.IdEmpleado.ToString(),
+                        Text = e.NombreCompleto + " (ID: " + e.IdEmpleado + ")"
+                    })
+                    .ToList();
+            }
+            else
+            {
+                // Lista temporal para pruebas
+                empleados = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "1", Text = "Juan Pérez - Administrador" },
+            new SelectListItem { Value = "2", Text = "María López - Cajera" },
+            new SelectListItem { Value = "3", Text = "Carlos Rojas - Supervisor" },
+            new SelectListItem { Value = "4", Text = "Ana Morales - Vendedor" },
+            new SelectListItem { Value = "5", Text = "Pedro Gómez - Mecánico" }
+        };
+            }
+
+            empleados.Insert(0, new SelectListItem
+            {
+                Value = "",
+                Text = "-- Seleccione un empleado --"
+            });
+
             return empleados;
         }
 
