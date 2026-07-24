@@ -1,0 +1,50 @@
+﻿@using Gasolinera.Models.Entidades
+@model Producto
+
+@{
+    ViewBag.Title = "Eliminar producto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card border-danger mt-4">
+    <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">Eliminar producto</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-warning">
+            ¿Está seguro de que desea eliminar este producto?
+        </div>
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Nombre</th>
+                    <td>@Model.Nombre</td>
+                </tr>
+                <tr>
+                    <th>Precio</th>
+                    <td>₡@Model.Precio.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <th>Stock</th>
+                    <td>@Model.Stock</td>
+                </tr>
+                <tr>
+                    <th>Categoría</th>
+                    <td>@Model.Categoria</td>
+                </tr>
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Eliminar", "Productos", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.IdProducto)
+
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+
+            @Html.ActionLink("No, volver", "Index", "Productos", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>

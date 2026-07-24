@@ -1,13 +1,7 @@
 ﻿using Gasolinera.Common;
-using Gasolinera.Common;
-using Gasolinera.Common;
-using Gasolinera.Models.Entidades;
 using gasolinera_2026.Models.Entidades;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace Gasolinera.Models.Entidades
 {
@@ -18,41 +12,57 @@ namespace Gasolinera.Models.Entidades
 
         [Required]
         [StringLength(20)]
+        [Display(Name = "Placa del Vehículo")]
         public string PlacaVehiculo { get; set; }
 
         [Required]
         [StringLength(50)]
+        [Display(Name = "Marca")]
         public string MarcaModelo { get; set; }
 
         [Required]
+        [Display(Name = "Año del Vehículo")]
         public int Anio { get; set; }
 
         [Required]
+        [StringLength(20)]
+        [Display(Name = "Tipo de Vehículo")]
+        public string TipoVehiculo { get; set; }
+
+        [Required]
         [StringLength(500)]
+        [Display(Name = "Diagnóstico del Vehículo")]
         public string Diagnostico { get; set; }
 
         [StringLength(1000)]
+        [Display(Name = "Trabajos Realizados")]
         public string TrabajosRealizados { get; set; }
 
+        [Display(Name = "Costo de Mano de Obra")]
         public decimal CostoManoObra { get; set; }
 
         [StringLength(500)]
-        public string RepuestosUtilizadosResumen { get; set; }
+        [Display(Name = "Lista de Repuestos Utilizados")]
+        public string ListaRepuestosUtilizados { get; set; }
 
         [Required]
+        [Display(Name = "Fecha de Entrada")]
         public DateTime FechaEntrada { get; set; }
 
+        [Display(Name = "Fecha de Finalización")]
         public DateTime? FechaFinalizacion { get; set; }
 
         [Required]
+        [Display(Name = "Estado")]
         public EstadoOrdenServicio Estado { get; set; }
 
         [Required]
-        public int IdCliente { get; set; }
+        [Display(Name = "Cliente")]
+        public string NombreCliente { get; set; }
 
+        [Display(Name = "Mecánico Asignado")]
         public int? IdEmpleado { get; set; }
 
-        public virtual Cliente Cliente { get; set; }
         public virtual Empleado Empleado { get; set; }
     }
 }

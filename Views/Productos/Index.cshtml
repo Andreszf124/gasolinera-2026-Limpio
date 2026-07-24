@@ -1,0 +1,71 @@
+﻿@using Gasolinera.Models.Entidades
+@model IEnumerable<Producto>
+@using System.Linq
+
+@{
+    ViewBag.Title = "Productos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Productos</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        @if (TempData["MensajeAdvertencia"] != null)
+        {
+            <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
+        }
+
+        @Html.ActionLink("Nuevo producto", "Crear", "Productos", null, new { @class = "btn btn-primary mb-3" })
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info">No hay productos registrados.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Categoría</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var producto in Model)
+                        {
+                            <tr>
+                                <td>@producto.Nombre</td>
+                                <td>₡@producto.Precio.ToString("N2")</td>
+                                <td>@producto.Stock</td>
+                                <td>@producto.Categoria</td>
+                                <td>
+                                    @Html.ActionLink("Detalle", "Detalles", "Productos", new { id = producto.IdProducto }, new { @class = "btn btn-info btn-sm me-1" })
+                                    @Html.ActionLink("Editar", "Editar", "Productos", new { id = producto.IdProducto }, new { @class = "btn btn-warning btn-sm me-1" })
+                                    @Html.ActionLink("Eliminar", "Eliminar", "Productos", new { id = producto.IdProducto }, new { @class = "btn btn-danger btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
