@@ -1,22 +1,23 @@
-﻿using Gasolinera.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using Gasolinera.Common;
 using Gasolinera.Infrastructure.DbContexts;
 using Gasolinera.Infrastructure.Repositories;
 using Gasolinera.Models.Entidades;
-using System;
-using System.Web.Mvc;
-
-
 
 namespace Gasolinera.Controllers
 {
     public class OrdenesServicioController : Controller
     {
         private readonly IOrdenServicioRepository _repositorio;
+        private readonly GasolineraContext _contexto;
 
         public OrdenesServicioController()
         {
-            var contexto = new GasolineraContext();
-            _repositorio = new OrdenServicioRepository(contexto);
+            _contexto = new GasolineraContext();
+            _repositorio = new OrdenServicioRepository(_contexto);
         }
 
         public ActionResult Index()
@@ -25,21 +26,13 @@ namespace Gasolinera.Controllers
             return View(ordenes);
         }
 
-        public ActionResult Detalles(int id)
-        {
-            var orden = _repositorio.ObtenerPorId(id);
-
-            if (orden == null)
-            {
-                TempData["MensajeError"] = "La orden de servicio no existe.";
-                return RedirectToAction("Index");
-            }
-
-            return View(orden);
-        }
-
+        [HttpGet]
         public ActionResult Crear()
         {
+            ViewBag.Empleados = ObtenerEmpleados();
+            ViewBag.Estados = ObtenerEstados();
+            ViewBag.TiposVehiculo = ObtenerTiposVehiculo();
+
             return View(new OrdenServicio
             {
                 FechaEntrada = DateTime.Now,
@@ -53,6 +46,9 @@ namespace Gasolinera.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.Empleados = ObtenerEmpleados();
+                ViewBag.Estados = ObtenerEstados();
+                ViewBag.TiposVehiculo = ObtenerTiposVehiculo();
                 TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
                 return View(ordenServicio);
             }
@@ -63,7 +59,8 @@ namespace Gasolinera.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Editar(int id)
+        [HttpGet]
+        public ActionResult Detalles(int id)
         {
             var orden = _repositorio.ObtenerPorId(id);
 
@@ -76,12 +73,33 @@ namespace Gasolinera.Controllers
             return View(orden);
         }
 
+        [HttpGet]
+        public ActionResult Editar(int id)
+        {
+            var orden = _repositorio.ObtenerPorId(id);
+
+            if (orden == null)
+            {
+                TempData["MensajeError"] = "La orden de servicio no existe.";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Empleados = ObtenerEmpleados();
+            ViewBag.Estados = ObtenerEstados();
+            ViewBag.TiposVehiculo = ObtenerTiposVehiculo();
+
+            return View(orden);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Editar(OrdenServicio ordenServicio)
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.Empleados = ObtenerEmpleados();
+                ViewBag.Estados = ObtenerEstados();
+                ViewBag.TiposVehiculo = ObtenerTiposVehiculo();
                 TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
                 return View(ordenServicio);
             }
@@ -92,6 +110,7 @@ namespace Gasolinera.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
         public ActionResult Eliminar(int id)
         {
             var orden = _repositorio.ObtenerPorId(id);
@@ -122,6 +141,46 @@ namespace Gasolinera.Controllers
 
             TempData["MensajeExito"] = "Orden de servicio eliminada correctamente.";
             return RedirectToAction("Index");
+        }
+
+        private List<SelectListItem> ObtenerEmpleados()
+        {
+            var empleados = _contexto.Empleados
+                .Select(e => new SelectListItem
+                {
+                    Value = e.IdEmpleado.ToString(),
+                    Text = e.NombreCompleto + " (ID: " + e.IdEmpleado + ")"
+                })
+                .ToList();
+
+            empleados.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un mecánico --" });
+            return empleados;
+        }
+
+        private List<SelectListItem> ObtenerEstados()
+        {
+            List<SelectListItem> estados = new List<SelectListItem>();
+
+            estados.Add(new SelectListItem { Text = "Pendiente", Value = "1" });
+            estados.Add(new SelectListItem { Text = "En Progreso", Value = "2" });
+            estados.Add(new SelectListItem { Text = "Completado", Value = "3" });
+            estados.Add(new SelectListItem { Text = "Entregado", Value = "4" });
+            estados.Add(new SelectListItem { Text = "Cancelado", Value = "5" });
+
+            estados.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un estado --" });
+            return estados;
+        }
+
+        private List<SelectListItem> ObtenerTiposVehiculo()
+        {
+            List<SelectListItem> tipos = new List<SelectListItem>();
+
+            tipos.Add(new SelectListItem { Text = "Carro", Value = "Carro" });
+            tipos.Add(new SelectListItem { Text = "Moto", Value = "Moto" });
+            tipos.Add(new SelectListItem { Text = "Camión", Value = "Camión" });
+
+            tipos.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un tipo de vehículo --" });
+            return tipos;
         }
     }
 }

@@ -132,10 +132,13 @@
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrdenesServicioController.cs" />
+    <Compile Include="Controllers\VentasController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\DbContexts\GasolineraContext.cs" />
+    <Compile Include="Infrastructure\Repositories\IVentaRepository.cs" />
+    <Compile Include="Infrastructure\Repositories\VentaRepository .cs" />
     <Compile Include="Infrastructure\Repositories\IOrdenServicioRepository.cs" />
     <Compile Include="Infrastructure\Repositories\IProductoRepository.cs" />
     <Compile Include="Infrastructure\Repositories\OrdenServicioRepository.cs" />
@@ -151,6 +154,14 @@
     <Compile Include="Migrations\202607232235430_AgregarVentaFactura.cs" />
     <Compile Include="Migrations\202607232235430_AgregarVentaFactura.Designer.cs">
       <DependentUpon>202607232235430_AgregarVentaFactura.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202607240744373_ActualizarOrdenServicio.cs" />
+    <Compile Include="Migrations\202607240744373_ActualizarOrdenServicio.Designer.cs">
+      <DependentUpon>202607240744373_ActualizarOrdenServicio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202607240746369_ActualizarOrdenServicio1.cs" />
+    <Compile Include="Migrations\202607240746369_ActualizarOrdenServicio1.Designer.cs">
+      <DependentUpon>202607240746369_ActualizarOrdenServicio1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entidades\Cliente.cs" />
@@ -217,12 +228,19 @@
     <Content Include="Views\OrdenesServicio\Detalles.cshtml" />
     <Content Include="Views\OrdenesServicio\Editar.cshtml" />
     <Content Include="Views\OrdenesServicio\Eliminar.cshtml" />
+    <Content Include="Views\Productos\Index.cshtml" />
+    <Content Include="Views\Productos\Crear.cshtml" />
+    <Content Include="Views\Productos\Detalles.cshtml" />
+    <Content Include="Views\Productos\Editar.cshtml" />
+    <Content Include="Views\Productos\Eliminar.cshtml" />
+    <Content Include="Views\Ventas\Index.cshtml" />
+    <Content Include="Views\Ventas\Crear.cshtml" />
+    <Content Include="Views\Ventas\Editar.cshtml" />
+    <Content Include="Views\Ventas\Detalles.cshtml" />
+    <Content Include="Views\Ventas\Eliminar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Facturas\" />
-    <Folder Include="Views\Productos\" />
-    <Folder Include="Views\Ventas\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -260,6 +278,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202607232235430_AgregarVentaFactura.resx">
       <DependentUpon>202607232235430_AgregarVentaFactura.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202607240744373_ActualizarOrdenServicio.resx">
+      <DependentUpon>202607240744373_ActualizarOrdenServicio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202607240746369_ActualizarOrdenServicio1.resx">
+      <DependentUpon>202607240746369_ActualizarOrdenServicio1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -1,0 +1,55 @@
+﻿@using Gasolinera.Models.Entidades
+@model IEnumerable<Venta>
+
+@{
+    ViewBag.Title = "Ventas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Lista de Ventas</h2>
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success">@TempData["MensajeExito"]</div>
+}
+
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger">@TempData["MensajeError"]</div>
+}
+
+@Html.ActionLink("Nueva Venta", "Crear", "Ventas", null, new { @class = "btn btn-primary mb-3" })
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Empleado</th>
+            <th>Tipo</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var venta in Model)
+        {
+            <tr>
+                <td>@venta.IdVenta</td>
+                <td>@venta.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@venta.IdCliente</td>
+                <td>@venta.IdEmpleado</td>
+                <td>@venta.TipoVenta</td>
+                <td>₡@venta.Total.ToString("N2")</td>
+                <td>@venta.Estado</td>
+                <td>
+                    @Html.ActionLink("Detalle", "Detalles", "Ventas", new { id = venta.IdVenta }, new { @class = "btn btn-info btn-sm" })
+                    @Html.ActionLink("Editar", "Editar", "Ventas", new { id = venta.IdVenta }, new { @class = "btn btn-warning btn-sm" })
+                    @Html.ActionLink("Eliminar", "Eliminar", "Ventas", new { id = venta.IdVenta }, new { @class = "btn btn-danger btn-sm" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

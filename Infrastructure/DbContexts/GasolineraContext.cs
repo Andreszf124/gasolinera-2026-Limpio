@@ -1,10 +1,6 @@
 ﻿using Gasolinera.Models.Entidades;
 using gasolinera_2026.Models.Entidades;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Web;
 
 namespace Gasolinera.Infrastructure.DbContexts
 {
@@ -21,7 +17,5 @@ namespace Gasolinera.Infrastructure.DbContexts
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Venta> Ventas { get; set; }
         public DbSet<Factura> Facturas { get; set; }
-
-
     }
 }
