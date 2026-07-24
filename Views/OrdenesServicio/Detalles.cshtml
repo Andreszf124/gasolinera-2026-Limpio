@@ -1,5 +1,4 @@
-﻿@using Gasolinera.Models.Entidades
-@model OrdenServicio
+﻿@model Gasolinera.Models.Entidades.OrdenServicio
 
 @{
     ViewBag.Title = "Detalle de Orden de Servicio";
@@ -23,14 +22,16 @@
                 <tr><th>Costo de Mano de Obra</th><td>₡@Model.CostoManoObra.ToString("N2")</td></tr>
                 <tr><th>Lista de Repuestos Utilizados</th><td>@(Model.ListaRepuestosUtilizados ?? "No registrado")</td></tr>
                 <tr><th>Cliente</th><td>@Model.NombreCliente</td></tr>
-                <tr><th>Mecánico Asignado</th><td>@(Model.Empleado?.NombreCompleto ?? "No asignado")</td></tr>
+                <tr><th>Mecánico Asignado</th><td>@(Model.Empleado != null ? Model.Empleado.NombreCompleto + " - " + Model.Empleado.Cargo : "No asignado")</td></tr>
                 <tr><th>Estado</th><td>@Model.Estado</td></tr>
                 <tr><th>Fecha de Entrada</th><td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td></tr>
                 <tr><th>Fecha de Finalización</th><td>@(Model.FechaFinalizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Pendiente")</td></tr>
             </tbody>
         </table>
 
-        @Html.ActionLink("Editar", "Editar", "OrdenesServicio", new { id = Model.IdOrdenServicio }, new { @class = "btn btn-warning" })
-        @Html.ActionLink("Volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
+        <div class="mt-3">
+            @Html.ActionLink("Editar", "Editar", "OrdenesServicio", new { id = Model.IdOrdenServicio }, new { @class = "btn btn-warning" })
+            @Html.ActionLink("Volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
+        </div>
     </div>
 </div>

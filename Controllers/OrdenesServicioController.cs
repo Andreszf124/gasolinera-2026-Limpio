@@ -145,16 +145,30 @@ namespace Gasolinera.Controllers
 
         private List<SelectListItem> ObtenerEmpleados()
         {
-            var empleados = _contexto.Empleados
-                .Select(e => new SelectListItem
-                {
-                    Value = e.IdEmpleado.ToString(),
-                    Text = e.NombreCompleto + " (ID: " + e.IdEmpleado + ")"
-                })
-                .ToList();
+            List<SelectListItem> empleados;
+
+            if (_contexto.Empleados.Any())
+            {
+                empleados = _contexto.Empleados
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.IdEmpleado.ToString(),
+                        Text = e.NombreCompleto + " - " + e.Cargo + " (ID: " + e.IdEmpleado + ")"
+                    })
+                    .ToList();
+            }
+            else
+            {
+                empleados = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "1", Text = "Juan Pérez - Mecánico" },
+            new SelectListItem { Value = "2", Text = "María López - Mecánico" },
+            new SelectListItem { Value = "3", Text = "Pedro Gómez - Mecánico" }
+        };
+            }
 
             empleados.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un mecánico --" });
-            return empleados;
+            return empleados; // <--- ESTE RETURN ES EL QUE FALTABA
         }
 
         private List<SelectListItem> ObtenerEstados()
