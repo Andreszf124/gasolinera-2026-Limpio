@@ -1,0 +1,35 @@
+﻿@using Gasolinera.Models.Entidades
+@model OrdenServicio
+
+@{
+    ViewBag.Title = "Detalle de orden de servicio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mt-4">
+    <div class="card-header bg-info text-white">
+        <h4 class="mb-0">Detalle de orden de servicio</h4>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered">
+            <tbody>
+                <tr><th>Placa del vehículo</th><td>@Model.PlacaVehiculo</td></tr>
+                <tr><th>Marca / Modelo</th><td>@Model.MarcaModelo</td></tr>
+                <tr><th>Año</th><td>@Model.Anio</td></tr>
+                <tr><th>Diagnóstico</th><td>@Model.Diagnostico</td></tr>
+                <tr><th>Trabajos realizados</th><td>@(Model.TrabajosRealizados ?? "No registrado")</td></tr>
+                <tr><th>Costo mano de obra</th><td>₡@Model.CostoManoObra.ToString("N2")</td></tr>
+                <tr><th>Repuestos utilizados</th><td>@(Model.RepuestosUtilizadosResumen ?? "No registrado")</td></tr>
+                <tr><th>Estado</th><td>@Model.Estado</td></tr>
+                <tr><th>Fecha de entrada</th><td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                <tr><th>Fecha de finalización</th><td>@(Model.FechaFinalizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Pendiente")</td></tr>
+                <tr><th>Cliente</th><td>@(Model.Cliente?.NombreCompleto ?? "N/A")</td></tr>
+                <tr><th>Mecánico asignado</th><td>@(Model.Empleado?.NombreCompleto ?? "No asignado")</td></tr>
+            </tbody>
+        </table>
+
+        @Html.ActionLink("Editar", "Editar", "OrdenesServicio", new { id = Model.IdOrdenServicio }, new { @class = "btn btn-warning" })
+        @Html.ActionLink("Volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
+    </div>
+</div>

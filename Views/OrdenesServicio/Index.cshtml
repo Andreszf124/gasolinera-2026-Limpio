@@ -1,0 +1,82 @@
+﻿@using Gasolinera.Models.Entidades
+@model IEnumerable<OrdenServicio>
+@using System.Linq
+
+@{
+    ViewBag.Title = "Órdenes de Servicio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Órdenes de servicio</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        @if (TempData["MensajeAdvertencia"] != null)
+        {
+            <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
+        }
+
+        @Html.ActionLink("Nueva orden de servicio", "Crear", "OrdenesServicio", null, new { @class = "btn btn-primary mb-3" })
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info">No hay órdenes de servicio registradas.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Placa</th>
+                            <th>Marca / Modelo</th>
+                            <th>Estado</th>
+                            <th>Fecha entrada</th>
+                            <th>Cliente</th>
+                            <th>Mano de obra</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var orden in Model)
+                        {
+                            <tr>
+                                <td>@orden.PlacaVehiculo</td>
+                                <td>@orden.MarcaModelo</td>
+                                <td>
+                                    <span class="badge @(orden.Estado == Gasolinera.Common.EstadoOrdenServicio.Pendiente ? "bg-warning" :
+                                                       orden.Estado == Gasolinera.Common.EstadoOrdenServicio.EnProgreso ? "bg-info" :
+                                                       orden.Estado == Gasolinera.Common.EstadoOrdenServicio.Completado ? "bg-success" :
+                                                       orden.Estado == Gasolinera.Common.EstadoOrdenServicio.Cancelado ? "bg-danger" : "bg-secondary")">
+                                        @orden.Estado
+                                    </span>
+                                </td>
+                                <td>@orden.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@(orden.Cliente?.NombreCompleto ?? "N/A")</td>
+                                <td>₡@orden.CostoManoObra.ToString("N2")</td>
+                                <td>
+                                    @Html.ActionLink("Detalle", "Detalles", "OrdenesServicio", new { id = orden.IdOrdenServicio }, new { @class = "btn btn-info btn-sm me-1" })
+                                    @Html.ActionLink("Editar", "Editar", "OrdenesServicio", new { id = orden.IdOrdenServicio }, new { @class = "btn btn-warning btn-sm me-1" })
+                                    @Html.ActionLink("Eliminar", "Eliminar", "OrdenesServicio", new { id = orden.IdOrdenServicio }, new { @class = "btn btn-danger btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

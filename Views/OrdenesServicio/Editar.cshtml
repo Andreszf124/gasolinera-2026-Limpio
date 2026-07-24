@@ -1,0 +1,88 @@
+﻿@using Gasolinera.Models.Entidades
+@model OrdenServicio
+
+@{
+    ViewBag.Title = "Editar orden de servicio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mt-4">
+    <div class="card-header bg-warning">
+        <h4 class="mb-0">Editar orden de servicio</h4>
+    </div>
+
+    <div class="card-body">
+        @using (Html.BeginForm("Editar", "OrdenesServicio", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.IdOrdenServicio)
+
+            if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+            }
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.PlacaVehiculo, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.PlacaVehiculo, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.PlacaVehiculo, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.MarcaModelo, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.MarcaModelo, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.MarcaModelo, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Anio, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Anio, new { @class = "form-control", type = "number" })
+                @Html.ValidationMessageFor(m => m.Anio, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Diagnostico, new { @class = "form-label" })
+                @Html.TextAreaFor(m => m.Diagnostico, new { @class = "form-control", rows = 4 })
+                @Html.ValidationMessageFor(m => m.Diagnostico, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.TrabajosRealizados, new { @class = "form-label" })
+                @Html.TextAreaFor(m => m.TrabajosRealizados, new { @class = "form-control", rows = 3 })
+                @Html.ValidationMessageFor(m => m.TrabajosRealizados, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.CostoManoObra, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.CostoManoObra, new { @class = "form-control", type = "number", step = "0.01" })
+                @Html.ValidationMessageFor(m => m.CostoManoObra, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.RepuestosUtilizadosResumen, new { @class = "form-label" })
+                @Html.TextAreaFor(m => m.RepuestosUtilizadosResumen, new { @class = "form-control", rows = 2 })
+                @Html.ValidationMessageFor(m => m.RepuestosUtilizadosResumen, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.IdCliente, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.IdCliente, new { @class = "form-control", type = "number" })
+                @Html.ValidationMessageFor(m => m.IdCliente, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.IdEmpleado, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.IdEmpleado, new { @class = "form-control", type = "number", placeholder = "ID del mecánico (opcional)" })
+                @Html.ValidationMessageFor(m => m.IdEmpleado, "", new { @class = "text-danger" })
+            </div>
+
+            <button type="submit" class="btn btn-success">Actualizar</button>
+
+            @Html.ActionLink("Volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
