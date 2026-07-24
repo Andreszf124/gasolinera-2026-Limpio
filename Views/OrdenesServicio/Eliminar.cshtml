@@ -1,0 +1,40 @@
+﻿@using Gasolinera.Models.Entidades
+@model OrdenServicio
+
+@{
+    ViewBag.Title = "Eliminar orden de servicio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card border-danger mt-4">
+    <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">Eliminar orden de servicio</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-warning">
+            ¿Está seguro de que desea eliminar esta orden de servicio?
+        </div>
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr><th>Placa del vehículo</th><td>@Model.PlacaVehiculo</td></tr>
+                <tr><th>Marca / Modelo</th><td>@Model.MarcaModelo</td></tr>
+                <tr><th>Estado</th><td>@Model.Estado</td></tr>
+                <tr><th>Fecha de entrada</th><td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                <tr><th>Cliente</th><td>@(Model.Cliente?.NombreCompleto ?? "N/A")</td></tr>
+                <tr><th>Costo mano de obra</th><td>₡@Model.CostoManoObra.ToString("N2")</td></tr>
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Eliminar", "OrdenesServicio", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.IdOrdenServicio)
+
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+
+            @Html.ActionLink("No, volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>
