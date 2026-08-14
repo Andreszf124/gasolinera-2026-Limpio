@@ -23,6 +23,10 @@ namespace Gasolinera.Models.Entidades
         public string TipoVenta { get; set; }
 
         [Required]
+        [StringLength(50)]
+        public string TipoPago { get; set; }
+
+        [Required]
         public decimal Subtotal { get; set; }
 
         public decimal Descuento { get; set; }

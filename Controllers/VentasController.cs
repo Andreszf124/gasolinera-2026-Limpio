@@ -12,11 +12,13 @@ namespace Gasolinera.Controllers
     {
         private readonly IVentaRepository _repositorio;
         private readonly GasolineraContext _contexto;
+        private readonly CashbackController _cashbackController;
 
         public VentasController()
         {
             _contexto = new GasolineraContext();
             _repositorio = new VentaRepository(_contexto);
+            _cashbackController = new CashbackController();
         }
 
         public ActionResult Index()
@@ -45,6 +47,11 @@ namespace Gasolinera.Controllers
                 ViewBag.OrdenesServicio = ObtenerOrdenesServicio();
                 TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
                 return View(venta);
+            }
+
+            if (venta.TipoPago != "Puntos" && venta.Total > 0)
+            {
+                _cashbackController.AcumularPuntos(venta.IdCliente, venta.IdVenta, venta.Total);
             }
 
             venta.Fecha = DateTime.Now;
@@ -157,7 +164,6 @@ namespace Gasolinera.Controllers
         {
             List<SelectListItem> empleados;
 
-            // Si existe la base de datos y tiene empleados
             if (_contexto.Empleados.Any())
             {
                 empleados = _contexto.Empleados
@@ -170,15 +176,14 @@ namespace Gasolinera.Controllers
             }
             else
             {
-                // Lista temporal para pruebas
                 empleados = new List<SelectListItem>
-        {
-            new SelectListItem { Value = "1", Text = "Juan Pérez - Administrador" },
-            new SelectListItem { Value = "2", Text = "María López - Cajera" },
-            new SelectListItem { Value = "3", Text = "Carlos Rojas - Supervisor" },
-            new SelectListItem { Value = "4", Text = "Ana Morales - Vendedor" },
-            new SelectListItem { Value = "5", Text = "Pedro Gómez - Mecánico" }
-        };
+                {
+                    new SelectListItem { Value = "1", Text = "Juan Pérez - Administrador" },
+                    new SelectListItem { Value = "2", Text = "María López - Cajera" },
+                    new SelectListItem { Value = "3", Text = "Carlos Rojas - Supervisor" },
+                    new SelectListItem { Value = "4", Text = "Ana Morales - Vendedor" },
+                    new SelectListItem { Value = "5", Text = "Pedro Gómez - Mecánico" }
+                };
             }
 
             empleados.Insert(0, new SelectListItem
