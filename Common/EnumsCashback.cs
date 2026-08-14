@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace gasolinera_2026.Common
+﻿namespace Gasolinera.Common
 {
     public enum TipoMovimientoCashback
     {

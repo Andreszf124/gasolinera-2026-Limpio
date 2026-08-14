@@ -1,0 +1,54 @@
+﻿@model Gasolinera.Models.Entidades.Factura
+
+@{
+    ViewBag.Title = "Eliminar Factura";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card border-danger mt-4">
+    <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">Eliminar Factura #@Model.IdFactura</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-warning">
+            ¿Está seguro de que desea eliminar esta factura?
+            <br />
+            <strong>Esta acción no se puede deshacer.</strong>
+        </div>
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Número de Factura</th>
+                    <td>@Model.NumeroFactura</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Emisión</th>
+                    <td>@Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")</td>
+                </tr>
+                <tr>
+                    <th>Venta</th>
+                    <td>#@Model.IdVenta</td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <td>₡@Model.Total.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <th>Cliente</th>
+                    <td>@(Model.Venta?.Cliente?.NombreCompleto ?? "N/A")</td>
+                </tr>
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Eliminar", "Facturas", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.IdFactura)
+
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            @Html.ActionLink("No, volver", "Index", "Facturas", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>

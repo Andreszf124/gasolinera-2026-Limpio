@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace gasolinera_2026
+namespace Gasolinera
 {
     public class BundleConfig
     {

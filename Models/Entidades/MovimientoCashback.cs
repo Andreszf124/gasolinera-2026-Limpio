@@ -1,13 +1,9 @@
-﻿using Gasolinera.Models.Entidades;
-using gasolinera_2026.Common;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
+using Gasolinera.Common;
 
-namespace gasolinera_2026.Models.Entidades
+namespace Gasolinera.Models.Entidades
 {
     public class MovimientoCashback
     {
@@ -39,6 +35,5 @@ namespace gasolinera_2026.Models.Entidades
 
         [ForeignKey("IdVenta")]
         public virtual Venta Venta { get; set; }
-
     }
 }

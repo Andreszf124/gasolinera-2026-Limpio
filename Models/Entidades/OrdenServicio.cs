@@ -1,7 +1,7 @@
-﻿using Gasolinera.Common;
-using gasolinera_2026.Models.Entidades;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Gasolinera.Common;
 
 namespace Gasolinera.Models.Entidades
 {
@@ -63,6 +63,7 @@ namespace Gasolinera.Models.Entidades
         [Display(Name = "Mecánico Asignado")]
         public int? IdEmpleado { get; set; }
 
+        [ForeignKey("IdEmpleado")]
         public virtual Empleado Empleado { get; set; }
     }
 }

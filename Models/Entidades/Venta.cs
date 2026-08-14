@@ -1,5 +1,4 @@
-﻿using gasolinera_2026.Models.Entidades;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
