@@ -33,6 +33,7 @@ namespace Gasolinera.Controllers
             ViewBag.Clientes = ObtenerClientes();
             ViewBag.Empleados = ObtenerEmpleadosVentas();
             ViewBag.OrdenesServicio = ObtenerOrdenesServicio();
+            ViewBag.TiposPago = ObtenerTiposPago();
             return View(new Venta());
         }
 
@@ -45,13 +46,58 @@ namespace Gasolinera.Controllers
                 ViewBag.Clientes = ObtenerClientes();
                 ViewBag.Empleados = ObtenerEmpleadosVentas();
                 ViewBag.OrdenesServicio = ObtenerOrdenesServicio();
+                ViewBag.TiposPago = ObtenerTiposPago();
                 TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
                 return View(venta);
             }
 
-            if (venta.TipoPago != "Puntos" && venta.Total > 0)
+            // Validar si el cliente quiere pagar con puntos
+            if (venta.TipoPago == "Puntos")
             {
-                _cashbackController.AcumularPuntos(venta.IdCliente, venta.IdVenta, venta.Total);
+                // Obtener el cashback del cliente
+                var cashback = _contexto.Cashbacks.FirstOrDefault(c => c.IdCliente == venta.IdCliente);
+
+                if (cashback == null)
+                {
+                    TempData["MensajeError"] = "El cliente no tiene puntos acumulados.";
+                    ViewBag.Clientes = ObtenerClientes();
+                    ViewBag.Empleados = ObtenerEmpleadosVentas();
+                    ViewBag.OrdenesServicio = ObtenerOrdenesServicio();
+                    ViewBag.TiposPago = ObtenerTiposPago();
+                    return View(venta);
+                }
+
+                // Calcular cuántos puntos necesita (1 punto = 200 colones)
+                decimal puntosNecesarios = Math.Ceiling(venta.Total / 200);
+
+                if (cashback.PuntosDisponibles < puntosNecesarios)
+                {
+                    TempData["MensajeError"] = $"El cliente no tiene suficientes puntos. Tiene {cashback.PuntosDisponibles} puntos, necesita {puntosNecesarios} puntos.";
+                    ViewBag.Clientes = ObtenerClientes();
+                    ViewBag.Empleados = ObtenerEmpleadosVentas();
+                    ViewBag.OrdenesServicio = ObtenerOrdenesServicio();
+                    ViewBag.TiposPago = ObtenerTiposPago();
+                    return View(venta);
+                }
+
+                // Aplicar descuento por puntos (el total se vuelve 0)
+                venta.Descuento = venta.Total;
+                venta.Total = 0;
+                venta.PuntosUsados = puntosNecesarios;
+
+                // Registrar el canje de puntos
+                _cashbackController.CanjearPuntos(venta.IdCliente, puntosNecesarios, venta.IdVenta);
+
+                TempData["MensajeExito"] = $"Venta realizada con puntos. Se usaron {puntosNecesarios} puntos.";
+            }
+            else
+            {
+                // Pago con dinero - acumular puntos automáticamente
+                if (venta.Total > 0)
+                {
+                    _cashbackController.AcumularPuntos(venta.IdCliente, venta.IdVenta, venta.Total);
+                }
+                TempData["MensajeExito"] = "Venta registrada correctamente. Se acumularon puntos por la compra.";
             }
 
             venta.Fecha = DateTime.Now;
@@ -59,7 +105,6 @@ namespace Gasolinera.Controllers
 
             _repositorio.Agregar(venta);
 
-            TempData["MensajeExito"] = "Venta registrada correctamente.";
             return RedirectToAction("Index");
         }
 
@@ -91,6 +136,7 @@ namespace Gasolinera.Controllers
             ViewBag.Clientes = ObtenerClientes();
             ViewBag.Empleados = ObtenerEmpleadosVentas();
             ViewBag.OrdenesServicio = ObtenerOrdenesServicio();
+            ViewBag.TiposPago = ObtenerTiposPago();
             return View(venta);
         }
 
@@ -103,6 +149,7 @@ namespace Gasolinera.Controllers
                 ViewBag.Clientes = ObtenerClientes();
                 ViewBag.Empleados = ObtenerEmpleadosVentas();
                 ViewBag.OrdenesServicio = ObtenerOrdenesServicio();
+                ViewBag.TiposPago = ObtenerTiposPago();
                 TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
                 return View(venta);
             }
@@ -146,6 +193,29 @@ namespace Gasolinera.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public JsonResult ObtenerPuntosCliente(int idCliente)
+        {
+            var cashback = _contexto.Cashbacks.FirstOrDefault(c => c.IdCliente == idCliente);
+
+            if (cashback == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    puntosDisponibles = 0,
+                    mensaje = "El cliente no tiene puntos acumulados."
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new
+            {
+                success = true,
+                puntosDisponibles = cashback.PuntosDisponibles,
+                mensaje = $"Puntos disponibles: {cashback.PuntosDisponibles}"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
         private List<SelectListItem> ObtenerClientes()
         {
             var clientes = _contexto.Clientes
@@ -170,7 +240,7 @@ namespace Gasolinera.Controllers
                     .Select(e => new SelectListItem
                     {
                         Value = e.IdEmpleado.ToString(),
-                        Text = e.NombreCompleto + " (ID: " + e.IdEmpleado + ")"
+                        Text = e.NombreCompleto + " - " + e.Cargo + " (ID: " + e.IdEmpleado + ")"
                     })
                     .ToList();
             }
@@ -207,6 +277,15 @@ namespace Gasolinera.Controllers
 
             ordenes.Insert(0, new SelectListItem { Value = "", Text = "-- Ninguna --" });
             return ordenes;
+        }
+
+        private List<SelectListItem> ObtenerTiposPago()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Dinero", Text = "Dinero" },
+                new SelectListItem { Value = "Puntos", Text = "Puntos (Cashback)" }
+            };
         }
     }
 }

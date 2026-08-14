@@ -46,6 +46,8 @@ namespace Gasolinera.Models.Entidades
 
         public int? IdOrdenServicio { get; set; }
 
+        public decimal PuntosUsados { get; set; }
+
         [ForeignKey("IdCliente")]
         public virtual Cliente Cliente { get; set; }
 

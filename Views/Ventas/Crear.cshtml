@@ -1,5 +1,4 @@
-﻿@using Gasolinera.Models.Entidades
-@model Venta
+﻿@model Gasolinera.Models.Entidades.Venta
 
 @{
     ViewBag.Title = "Nueva Venta";
@@ -12,6 +11,16 @@
     </div>
 
     <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
         @if (TempData["MensajeAdvertencia"] != null)
         {
             <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
@@ -30,7 +39,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         @Html.Label("Cliente", new { @class = "form-label" })
-                        @Html.DropDownListFor(m => m.IdCliente, (List<SelectListItem>)ViewBag.Clientes, new { @class = "form-select" })
+                        @Html.DropDownListFor(m => m.IdCliente, (List<SelectListItem>)ViewBag.Clientes, new { @class = "form-select", id = "clienteSelect" })
                         @Html.ValidationMessageFor(m => m.IdCliente, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -47,15 +56,18 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         @Html.LabelFor(m => m.TipoVenta, new { @class = "form-label" })
-                        @Html.DropDownListFor(m => m.TipoVenta, new SelectList(new[] { "Combustible", "Productos" }), "-- Seleccione un tipo --", new { @class = "form-select" })
+                        @Html.DropDownListFor(m => m.TipoVenta,
+                            new SelectList(new[] { "Combustible", "Productos", "Servicio" }),
+                            "-- Seleccione un tipo --",
+                            new { @class = "form-select" })
                         @Html.ValidationMessageFor(m => m.TipoVenta, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        @Html.LabelFor(m => m.MetodoPago, new { @class = "form-label" })
-                        @Html.DropDownListFor(m => m.MetodoPago, new SelectList(new[] { "Efectivo", "Tarjeta" }), "-- Seleccione un método --", new { @class = "form-select" })
-                        @Html.ValidationMessageFor(m => m.MetodoPago, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.TipoPago, new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.TipoPago, (List<SelectListItem>)ViewBag.TiposPago, "-- Seleccione un tipo de pago --", new { @class = "form-select", id = "tipoPagoSelect" })
+                        @Html.ValidationMessageFor(m => m.TipoPago, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
@@ -64,14 +76,14 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         @Html.LabelFor(m => m.Subtotal, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Subtotal, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0.00" })
+                        @Html.TextBoxFor(m => m.Subtotal, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0.00", id = "subtotalInput" })
                         @Html.ValidationMessageFor(m => m.Subtotal, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
                         @Html.LabelFor(m => m.Descuento, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Descuento, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0.00" })
+                        @Html.TextBoxFor(m => m.Descuento, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0.00", id = "descuentoInput" })
                         @Html.ValidationMessageFor(m => m.Descuento, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -80,6 +92,36 @@
                         @Html.LabelFor(m => m.Impuesto, new { @class = "form-label" })
                         @Html.TextBoxFor(m => m.Impuesto, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0.00" })
                         @Html.ValidationMessageFor(m => m.Impuesto, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Total, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Total, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0.00", id = "totalInput" })
+                        @Html.ValidationMessageFor(m => m.Total, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.MetodoPago, new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.MetodoPago,
+                            new SelectList(new[] { "Efectivo", "Tarjeta" }),
+                            "-- Seleccione un método --",
+                            new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.MetodoPago, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.PuntosUsados, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.PuntosUsados, new { @class = "form-control", type = "number", step = "1", placeholder = "0", id = "puntosUsadosInput", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.PuntosUsados, "", new { @class = "text-danger" })
+                        <div class="form-text" id="puntosDisponiblesInfo">
+                            Seleccione un cliente para ver sus puntos.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -98,4 +140,40 @@
 
 @section scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // ==========================================
+            // OBTENER PUNTOS DEL CLIENTE
+            // ==========================================
+            $('#clienteSelect').on('change', function() {
+                var idCliente = $(this).val();
+                if (idCliente) {
+                    $.ajax({
+                        url: '@Url.Action("ObtenerPuntosCliente", "Ventas")',
+                        type: 'GET',
+                        data: { idCliente: idCliente },
+                        success: function(data) {
+                            if (data.success) {
+                                $('#puntosDisponiblesInfo').html('<strong>Puntos disponibles: ' + data.puntosDisponibles + '</strong>');
+                            } else {
+                                $('#puntosDisponiblesInfo').html('<span class="text-danger">' + data.mensaje + '</span>');
+                            }
+                        },
+                        error: function() {
+                            $('#puntosDisponiblesInfo').html('<span class="text-danger">Error al obtener los puntos.</span>');
+                        }
+                    });
+                }
+            });
+
+  
+            $('#subtotalInput, #descuentoInput, #impuestoInput').on('input', function() {
+                var subtotal = parseFloat($('#subtotalInput').val()) || 0;
+                var descuento = parseFloat($('#descuentoInput').val()) || 0;
+                var impuesto = parseFloat($('#impuestoInput').val()) || 0;
+                var total = subtotal - descuento + impuesto;
+                $('#totalInput').val(total.toFixed(2));
+            });
+        });
+    </script>
 }
