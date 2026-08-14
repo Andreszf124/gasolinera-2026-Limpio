@@ -17,5 +17,7 @@ namespace Gasolinera.Infrastructure.DbContexts
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Venta> Ventas { get; set; }
         public DbSet<Factura> Facturas { get; set; }
+        public DbSet<Cashback> Cashbacks { get; set; }
+        public DbSet<MovimientoCashback> MovimientosCashback { get; set; }
     }
 }

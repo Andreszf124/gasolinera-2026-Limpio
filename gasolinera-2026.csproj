@@ -128,7 +128,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\CategoriaProducto.cs" />
+    <Compile Include="Common\EnumsCashback.cs" />
     <Compile Include="Common\EstadoOrdenServicio.cs" />
+    <Compile Include="Controllers\CashbackController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrdenesServicioController.cs" />
@@ -137,7 +139,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\DbContexts\GasolineraContext.cs" />
+    <Compile Include="Infrastructure\Repositories\CashbackRepository.cs" />
+    <Compile Include="Infrastructure\Repositories\ICashbackRepository.cs" />
+    <Compile Include="Infrastructure\Repositories\IMovimientoCashbackRepository.cs" />
     <Compile Include="Infrastructure\Repositories\IVentaRepository.cs" />
+    <Compile Include="Infrastructure\Repositories\MovimientoCashbackRepository.cs" />
     <Compile Include="Infrastructure\Repositories\VentaRepository .cs" />
     <Compile Include="Infrastructure\Repositories\IOrdenServicioRepository.cs" />
     <Compile Include="Infrastructure\Repositories\IProductoRepository.cs" />
@@ -163,10 +169,16 @@
     <Compile Include="Migrations\202607240746369_ActualizarOrdenServicio1.Designer.cs">
       <DependentUpon>202607240746369_ActualizarOrdenServicio1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608140256256_AgregarCashback.cs" />
+    <Compile Include="Migrations\202608140256256_AgregarCashback.Designer.cs">
+      <DependentUpon>202608140256256_AgregarCashback.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Entidades\Cliente.cs" />
+    <Compile Include="Models\Entidades\Cashback.cs" />
     <Compile Include="Models\Entidades\Empleado.cs" />
     <Compile Include="Models\Entidades\Factura.cs" />
+    <Compile Include="Models\Entidades\MovimientoCashback.cs" />
     <Compile Include="Models\Entidades\OrdenServicio.cs" />
     <Compile Include="Models\Entidades\Producto.cs" />
     <Compile Include="Models\Entidades\Venta.cs" />
@@ -284,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202607240746369_ActualizarOrdenServicio1.resx">
       <DependentUpon>202607240746369_ActualizarOrdenServicio1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608140256256_AgregarCashback.resx">
+      <DependentUpon>202608140256256_AgregarCashback.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
