@@ -1,31 +1,29 @@
-﻿@using Gasolinera.Models.Entidades
-@model OrdenServicio
+﻿@model Gasolinera.Models.Entidades.OrdenServicio
 
 @{
-    ViewBag.Title = "Eliminar Orden de Servicio";
+    ViewBag.Title = "Cancelar Servicio";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="card border-danger mt-4">
     <div class="card-header bg-danger text-white">
-        <h4 class="mb-0">Eliminar Orden de Servicio #@Model.IdOrdenServicio</h4>
+        <h4 class="mb-0">Cancelar Solicitud #@Model.IdOrdenServicio</h4>
     </div>
 
     <div class="card-body">
         <div class="alert alert-warning">
-            ¿Está seguro de que desea eliminar esta orden de servicio?
+            <strong>¿Está seguro de que desea cancelar esta solicitud de servicio?</strong>
+            <br />
+            <span class="text-muted">Esta acción no se puede deshacer.</span>
         </div>
 
         <table class="table table-bordered">
             <tbody>
-                <tr><th>Placa del Vehículo</th><td>@Model.PlacaVehiculo</td></tr>
-                <tr><th>Marca</th><td>@Model.MarcaModelo</td></tr>
-                <tr><th>Año del Vehículo</th><td>@Model.Anio</td></tr>
-                <tr><th>Tipo de Vehículo</th><td>@Model.TipoVehiculo</td></tr>
+                <tr><th>Vehículo</th><td>@(Model.Vehiculo?.Placa ?? "N/A")</td></tr>
                 <tr><th>Cliente</th><td>@Model.NombreCliente</td></tr>
+                <tr><th>Tipo Servicio</th><td>@Model.TipoServicio</td></tr>
                 <tr><th>Estado</th><td>@Model.Estado</td></tr>
-                <tr><th>Fecha de Entrada</th><td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td></tr>
-                <tr><th>Costo de Mano de Obra</th><td>₡@Model.CostoManoObra.ToString("N2")</td></tr>
+                <tr><th>Fecha</th><td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td></tr>
             </tbody>
         </table>
 
@@ -34,7 +32,7 @@
             @Html.AntiForgeryToken()
             @Html.Hidden("id", Model.IdOrdenServicio)
 
-            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            <button type="submit" class="btn btn-danger">Sí, cancelar</button>
             @Html.ActionLink("No, volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
         }
     </div>

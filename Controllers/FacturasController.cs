@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Gasolinera.Infrastructure.DbContexts;
 using Gasolinera.Models.Entidades;
+using Microsoft.AspNet.Identity;
 
 namespace Gasolinera.Controllers
 {
@@ -16,17 +17,43 @@ namespace Gasolinera.Controllers
             _contexto = new GasolineraContext();
         }
 
+        // ==========================================
+        // LISTA DE FACTURAS
+        // ==========================================
         [HttpGet]
         public ActionResult Index()
         {
-            var facturas = _contexto.Facturas
-                .Include("Venta")
-                .Include("Venta.Cliente")
-                .ToList();
+            var userId = User.Identity.GetUserId();
 
-            return View(facturas);
+            if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
+            {
+                var facturas = _contexto.Facturas
+                    .Include("Venta")
+                    .Include("Venta.Cliente")
+                    .OrderByDescending(f => f.FechaEmision)
+                    .ToList();
+
+                return View(facturas);
+            }
+            else
+            {
+                var cliente = _contexto.Clientes.FirstOrDefault(c => c.Correo == User.Identity.Name);
+                var idCliente = cliente != null ? cliente.IdCliente : 0;
+
+                var facturas = _contexto.Facturas
+                    .Include("Venta")
+                    .Include("Venta.Cliente")
+                    .Where(f => f.Venta.IdCliente == idCliente)
+                    .OrderByDescending(f => f.FechaEmision)
+                    .ToList();
+
+                return View(facturas);
+            }
         }
 
+        // ==========================================
+        // DETALLES DE FACTURA
+        // ==========================================
         [HttpGet]
         public ActionResult Detalles(int id)
         {
@@ -45,60 +72,189 @@ namespace Gasolinera.Controllers
             return View(factura);
         }
 
+        // ==========================================
+        // CREAR FACTURA
+        // ==========================================
         [HttpGet]
+        [Authorize(Roles = "Administrador, Moderador")]
         public ActionResult Crear()
         {
-            var ventasSinFactura = _contexto.Ventas
-                .Where(v => v.Estado == "Activa" && !_contexto.Facturas.Any(f => f.IdVenta == v.IdVenta))
-                .ToList();
-
-            ViewBag.Ventas = new SelectList(ventasSinFactura, "IdVenta", "IdVenta");
-            return View(new Factura
-            {
-                FechaEmision = DateTime.Now,
-                NumeroFactura = GenerarNumeroFactura()
-            });
+            ViewBag.Productos = _contexto.Productos.Where(p => p.Stock > 0).ToList();
+            ViewBag.Clientes = new SelectList(_contexto.Clientes, "IdCliente", "NombreCompleto");
+            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Crear(Factura factura)
+        [Authorize(Roles = "Administrador, Moderador")]
+        public ActionResult Crear(int idCliente, int[] productoIds, int[] cantidades)
         {
-            if (!ModelState.IsValid)
+            if (productoIds == null || productoIds.Length == 0)
             {
-                var ventasSinFactura = _contexto.Ventas
-                    .Where(v => v.Estado == "Activa" && !_contexto.Facturas.Any(f => f.IdVenta == v.IdVenta))
-                    .ToList();
-
-                ViewBag.Ventas = new SelectList(ventasSinFactura, "IdVenta", "IdVenta", factura.IdVenta);
-                return View(factura);
+                TempData["MensajeError"] = "Debe seleccionar al menos un producto.";
+                ViewBag.Productos = _contexto.Productos.Where(p => p.Stock > 0).ToList();
+                ViewBag.Clientes = new SelectList(_contexto.Clientes, "IdCliente", "NombreCompleto");
+                return View();
             }
 
-            var venta = _contexto.Ventas.Find(factura.IdVenta);
+            var cliente = _contexto.Clientes.Find(idCliente);
 
-            if (venta == null)
+            if (cliente == null)
             {
-                TempData["MensajeError"] = "La venta seleccionada no existe.";
-                return RedirectToAction("Index");
+                TempData["MensajeError"] = "Cliente no encontrado.";
+                return RedirectToAction("Crear");
             }
 
-            if (_contexto.Facturas.Any(f => f.IdVenta == factura.IdVenta))
+            decimal total = 0;
+            for (int i = 0; i < productoIds.Length; i++)
             {
-                TempData["MensajeError"] = "Esta venta ya tiene una factura asociada.";
-                return RedirectToAction("Index");
+                var producto = _contexto.Productos.Find(productoIds[i]);
+                if (producto != null)
+                {
+                    total += producto.Precio * cantidades[i];
+                }
             }
 
-            factura.NumeroFactura = GenerarNumeroFactura();
-            factura.FechaEmision = DateTime.Now;
-            factura.Total = venta.Total;
+            var venta = new Venta
+            {
+                Fecha = DateTime.Now,
+                IdCliente = idCliente,
+                IdEmpleado = 1,
+                TipoVenta = "Productos",
+                TipoPago = "Dinero",
+                Subtotal = total,
+                Descuento = 0,
+                Impuesto = 0,
+                Total = total,
+                MetodoPago = "Efectivo",
+                Estado = "Activa",
+                PuntosUsados = 0
+            };
+
+            _contexto.Ventas.Add(venta);
+            _contexto.SaveChanges();
+
+            var factura = new Factura
+            {
+                IdVenta = venta.IdVenta,
+                FechaEmision = DateTime.Now,
+                NumeroFactura = GenerarNumeroFactura(),
+                Total = total,
+                Estado = "Pendiente",
+                Observaciones = "Factura generada por compra de productos."
+            };
 
             _contexto.Facturas.Add(factura);
             _contexto.SaveChanges();
 
-            TempData["MensajeExito"] = $"Factura {factura.NumeroFactura} generada correctamente.";
+            for (int i = 0; i < productoIds.Length; i++)
+            {
+                var producto = _contexto.Productos.Find(productoIds[i]);
+                if (producto != null)
+                {
+                    producto.Stock -= cantidades[i];
+                }
+            }
+
+            _contexto.SaveChanges();
+
+            if (venta.TipoPago != "Puntos" && venta.Total > 0)
+            {
+                var cashbackController = new CashbackController();
+                cashbackController.AcumularPuntos(idCliente, venta.IdVenta, venta.Total);
+            }
+
+            TempData["MensajeExito"] = $"Factura {factura.NumeroFactura} generada correctamente. Estado: Pendiente de aprobación.";
             return RedirectToAction("Index");
         }
 
+        // ==========================================
+        // APROBAR FACTURA
+        // ==========================================
+        [HttpGet]
+        [Authorize(Roles = "Administrador, Moderador")]
+        public ActionResult Aprobar(int id)
+        {
+            var factura = _contexto.Facturas.Find(id);
+
+            if (factura == null)
+            {
+                TempData["MensajeError"] = "La factura no existe.";
+                return RedirectToAction("Index");
+            }
+
+            return View(factura);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Moderador")]
+        public ActionResult Aprobar(int id, string observaciones)
+        {
+            var factura = _contexto.Facturas.Find(id);
+
+            if (factura == null)
+            {
+                TempData["MensajeError"] = "La factura no existe.";
+                return RedirectToAction("Index");
+            }
+
+            factura.Estado = "Aprobada";
+            factura.FechaAprobacion = DateTime.Now;
+            factura.AprobadoPorId = User.Identity.GetUserId();
+            factura.Observaciones = observaciones;
+
+            _contexto.SaveChanges();
+
+            TempData["MensajeExito"] = $"Factura {factura.NumeroFactura} aprobada correctamente.";
+            return RedirectToAction("Index");
+        }
+
+        // ==========================================
+        // RECHAZAR FACTURA
+        // ==========================================
+        [HttpGet]
+        [Authorize(Roles = "Administrador, Moderador")]
+        public ActionResult Rechazar(int id)
+        {
+            var factura = _contexto.Facturas.Find(id);
+
+            if (factura == null)
+            {
+                TempData["MensajeError"] = "La factura no existe.";
+                return RedirectToAction("Index");
+            }
+
+            return View(factura);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Moderador")]
+        public ActionResult Rechazar(int id, string observaciones)
+        {
+            var factura = _contexto.Facturas.Find(id);
+
+            if (factura == null)
+            {
+                TempData["MensajeError"] = "La factura no existe.";
+                return RedirectToAction("Index");
+            }
+
+            factura.Estado = "Rechazada";
+            factura.FechaAprobacion = DateTime.Now;
+            factura.AprobadoPorId = User.Identity.GetUserId();
+            factura.Observaciones = observaciones;
+
+            _contexto.SaveChanges();
+
+            TempData["MensajeExito"] = $"Factura {factura.NumeroFactura} rechazada correctamente.";
+            return RedirectToAction("Index");
+        }
+
+        // ==========================================
+        // ELIMINAR FACTURA
+        // ==========================================
         [HttpGet]
         [Authorize(Roles = "Administrador")]
         public ActionResult Eliminar(int id)
@@ -138,31 +294,9 @@ namespace Gasolinera.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public JsonResult ObtenerDatosVenta(int idVenta)
-        {
-            var venta = _contexto.Ventas
-                .Include("Cliente")
-                .FirstOrDefault(v => v.IdVenta == idVenta);
-
-            if (venta == null)
-            {
-                return Json(new { success = false, mensaje = "Venta no encontrada." }, JsonRequestBehavior.AllowGet);
-            }
-
-            if (_contexto.Facturas.Any(f => f.IdVenta == idVenta))
-            {
-                return Json(new { success = false, mensaje = "Esta venta ya tiene una factura asociada." }, JsonRequestBehavior.AllowGet);
-            }
-
-            return Json(new
-            {
-                success = true,
-                total = venta.Total,
-                cliente = venta.Cliente?.NombreCompleto ?? "N/A"
-            }, JsonRequestBehavior.AllowGet);
-        }
-
+        // ==========================================
+        // MÉTODOS PRIVADOS
+        // ==========================================
         private string GenerarNumeroFactura()
         {
             var anio = DateTime.Now.Year;

@@ -1,0 +1,37 @@
+﻿@model Gasolinera.Models.Entidades.Factura
+
+@{
+    ViewBag.Title = "Aprobar Factura";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">Aprobar Factura @Model.NumeroFactura</h4>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered">
+            <tbody>
+                <tr><th>Cliente</th><td>@(Model.Venta?.Cliente?.NombreCompleto ?? "N/A")</td></tr>
+                <tr><th>Total</th><td>₡@Model.Total.ToString("N2")</td></tr>
+                <tr><th>Fecha</th><td>@Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                <tr><th>Estado actual</th><td><span class="badge bg-warning text-dark">@Model.Estado</span></td></tr>
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Aprobar", "Facturas", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.IdFactura)
+
+            <div class="mb-3">
+                <label class="form-label">Observaciones (opcional)</label>
+                <textarea name="observaciones" class="form-control" rows="3" placeholder="Agregar observaciones sobre la aprobación..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Confirmar Aprobación</button>
+            @Html.ActionLink("Cancelar", "Index", "Facturas", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>

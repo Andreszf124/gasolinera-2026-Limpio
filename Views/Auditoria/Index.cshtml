@@ -1,0 +1,159 @@
+﻿@{
+    ViewBag.Title = "Auditoría";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Auditoría del Sistema</h4>
+    </div>
+
+    <div class="card-body">
+        <!-- ========================================== -->
+        <!-- ESTADÍSTICAS GENERALES                      -->
+        <!-- ========================================== -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5>Órdenes</h5>
+                        <h3>@ViewBag.TotalOrdenes</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5>Ventas</h5>
+                        <h3>@ViewBag.TotalVentas</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <h5>Facturas</h5>
+                        <h3>@ViewBag.TotalFacturas</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <h5>Clientes</h5>
+                        <h3>@ViewBag.TotalClientes</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body">
+                        <h5>Productos</h5>
+                        <h3>@ViewBag.TotalProductos</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-dark">
+                    <div class="card-body">
+                        <h5>Usuarios</h5>
+                        <h3>@ViewBag.TotalUsuarios</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ÚLTIMOS MOVIMIENTOS DE CASHBACK             -->
+        <!-- ========================================== -->
+        <h5>Últimos Movimientos de Cashback</h5>
+        <hr />
+
+        @if (ViewBag.Movimientos == null || ViewBag.Movimientos.Count == 0)
+        {
+            <div class="alert alert-info">No hay movimientos de cashback registrados.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Tipo</th>
+                            <th>Puntos</th>
+                            <th>Monto</th>
+                            <th>Usuario Responsable</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var movimiento in ViewBag.Movimientos)
+                        {
+                            <tr>
+                                <td>@movimiento.FechaMovimiento.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@(movimiento.Cliente?.NombreCompleto ?? "N/A")</td>
+                                <td>
+                                    <span class="badge @(movimiento.TipoMovimiento == Gasolinera.Common.TipoMovimientoCashback.Acumulacion ? "bg-success" : "bg-warning")">
+                                        @movimiento.TipoMovimiento
+                                    </span>
+                                </td>
+                                <td>@movimiento.PuntosGenerados.ToString("N0")</td>
+                                <td>₡@movimiento.Monto.ToString("N2")</td>
+                                <td>@(movimiento.UsuarioResponsableId ?? "Sistema")</td>
+                                <td>@movimiento.Observaciones</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <!-- ========================================== -->
+        <!-- MOVIMIENTOS DE INVENTARIO                   -->
+        <!-- ========================================== -->
+        <!--
+        <h5 class="mt-4">Últimos Movimientos de Inventario</h5>
+        <hr />
+
+        @if (ViewBag.MovimientosInventario == null || ViewBag.MovimientosInventario.Count == 0)
+        {
+            <div class="alert alert-info">No hay movimientos de inventario registrados.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Artículo</th>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Usuario Responsable</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var movimiento in ViewBag.MovimientosInventario)
+                        {
+                            <tr>
+                                <td>@movimiento.FechaMovimiento.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@(movimiento.Articulo?.Nombre ?? "N/A")</td>
+                                <td>@movimiento.TipoMovimiento</td>
+                                <td>@movimiento.Cantidad</td>
+                                <td>@movimiento.UsuarioResponsableId</td>
+                                <td>@movimiento.Observaciones</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        -->
+    </div>
+</div>

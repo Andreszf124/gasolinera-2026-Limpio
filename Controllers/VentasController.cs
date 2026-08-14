@@ -268,10 +268,11 @@ namespace Gasolinera.Controllers
         private List<SelectListItem> ObtenerOrdenesServicio()
         {
             var ordenes = _contexto.OrdenesServicio
+                .Include(v => v.Vehiculo)
                 .Select(o => new SelectListItem
                 {
                     Value = o.IdOrdenServicio.ToString(),
-                    Text = "Orden #" + o.IdOrdenServicio + " - " + o.PlacaVehiculo
+                    Text = "Orden #" + o.IdOrdenServicio + " - " + (o.Vehiculo != null ? o.Vehiculo.Placa : "N/A")
                 })
                 .ToList();
 

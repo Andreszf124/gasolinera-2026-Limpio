@@ -30,98 +30,48 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        @Html.LabelFor(m => m.PlacaVehiculo, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.PlacaVehiculo, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.PlacaVehiculo, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.IdVehiculo, new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.IdVehiculo, (SelectList)ViewBag.Vehiculos, "-- Seleccione un vehículo --", new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.IdVehiculo, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        @Html.LabelFor(m => m.MarcaModelo, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.MarcaModelo, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.MarcaModelo, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.Anio, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Anio, new { @class = "form-control", type = "number" })
-                        @Html.ValidationMessageFor(m => m.Anio, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.TipoVehiculo, new { @class = "form-label" })
-                        @Html.DropDownListFor(m => m.TipoVehiculo, (List<SelectListItem>)ViewBag.TiposVehiculo, new { @class = "form-select" })
-                        @Html.ValidationMessageFor(m => m.TipoVehiculo, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.TipoServicio, new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.TipoServicio, (SelectList)ViewBag.TiposServicio, "-- Seleccione un tipo --", new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.TipoServicio, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
 
             <div class="mb-3">
-                @Html.LabelFor(m => m.Diagnostico, new { @class = "form-label" })
-                @Html.TextAreaFor(m => m.Diagnostico, new { @class = "form-control", rows = 4 })
-                @Html.ValidationMessageFor(m => m.Diagnostico, "", new { @class = "text-danger" })
+                @Html.LabelFor(m => m.DescripcionServicio, new { @class = "form-label" })
+                @Html.TextAreaFor(m => m.DescripcionServicio, new { @class = "form-control", rows = 4 })
+                @Html.ValidationMessageFor(m => m.DescripcionServicio, "", new { @class = "text-danger" })
             </div>
 
             <div class="mb-3">
-                @Html.LabelFor(m => m.TrabajosRealizados, new { @class = "form-label" })
-                @Html.TextAreaFor(m => m.TrabajosRealizados, new { @class = "form-control", rows = 3 })
-                @Html.ValidationMessageFor(m => m.TrabajosRealizados, "", new { @class = "text-danger" })
+                @Html.LabelFor(m => m.NombreCliente, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.NombreCliente, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.NombreCliente, "", new { @class = "text-danger" })
             </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.CostoManoObra, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.CostoManoObra, new { @class = "form-control", type = "number", step = "0.01" })
-                        @Html.ValidationMessageFor(m => m.CostoManoObra, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.ListaRepuestosUtilizados, new { @class = "form-label" })
-                        @Html.TextAreaFor(m => m.ListaRepuestosUtilizados, new { @class = "form-control", rows = 2 })
-                        @Html.ValidationMessageFor(m => m.ListaRepuestosUtilizados, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+            <div class="mb-3">
+                @Html.LabelFor(m => m.IdEmpleado, new { @class = "form-label" })
+                @Html.DropDownListFor(m => m.IdEmpleado, (SelectList)ViewBag.Empleados, "-- Seleccione un mecánico --", new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.IdEmpleado, "", new { @class = "text-danger" })
             </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.NombreCliente, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.NombreCliente, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.NombreCliente, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.IdEmpleado, new { @class = "form-label" })
-                        @Html.DropDownListFor(m => m.IdEmpleado, (List<SelectListItem>)ViewBag.Empleados, new { @class = "form-select" })
-                        @Html.ValidationMessageFor(m => m.IdEmpleado, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+            <div class="mb-3">
+                @Html.LabelFor(m => m.FechaEntrada, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.FechaEntrada, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", type = "datetime-local" })
+                @Html.ValidationMessageFor(m => m.FechaEntrada, "", new { @class = "text-danger" })
             </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.FechaEntrada, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.FechaEntrada, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", type = "datetime-local" })
-                        @Html.ValidationMessageFor(m => m.FechaEntrada, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.Estado, new { @class = "form-label" })
-                        @Html.DropDownListFor(m => m.Estado, (List<SelectListItem>)ViewBag.Estados, new { @class = "form-select" })
-                        @Html.ValidationMessageFor(m => m.Estado, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Estado, new { @class = "form-label" })
+                @Html.DropDownListFor(m => m.Estado, (SelectList)ViewBag.Estados, "-- Seleccione un estado --", new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.Estado, "", new { @class = "text-danger" })
             </div>
 
             <button type="submit" class="btn btn-success">Actualizar</button>

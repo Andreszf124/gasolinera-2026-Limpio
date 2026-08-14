@@ -6,6 +6,7 @@ using Gasolinera.Common;
 using Gasolinera.Infrastructure.DbContexts;
 using Gasolinera.Infrastructure.Repositories;
 using Gasolinera.Models.Entidades;
+using Microsoft.AspNet.Identity;
 
 namespace Gasolinera.Controllers
 {
@@ -21,6 +22,16 @@ namespace Gasolinera.Controllers
         public CashbackController()
         {
             _contexto = new GasolineraContext();
+            _cashbackRepo = new CashbackRepository(_contexto);
+            _movimientoCashbackRepo = new MovimientoCashbackRepository(_contexto);
+        }
+
+        // ========================================== //
+        // CONSTRUCTOR PARA USO DESDE TIENDACONTROLLER //
+        // ========================================== //
+        public CashbackController(GasolineraContext contexto)
+        {
+            _contexto = contexto;
             _cashbackRepo = new CashbackRepository(_contexto);
             _movimientoCashbackRepo = new MovimientoCashbackRepository(_contexto);
         }
@@ -91,6 +102,7 @@ namespace Gasolinera.Controllers
                 PuntosGenerados = -puntos,
                 TipoMovimiento = TipoMovimientoCashback.Canje,
                 FechaMovimiento = DateTime.Now,
+                UsuarioResponsableId = User.Identity.GetUserId(),
                 Observaciones = $"Canje de {puntos} puntos por ₡{descuento:N2} de descuento"
             };
 
@@ -109,12 +121,13 @@ namespace Gasolinera.Controllers
             return View(movimientos);
         }
 
-        // ==========================================
-        // MÉTODO PARA ACUMULAR PUNTOS
-        // ==========================================
+        // ========================================== //
+        // ACUMULAR PUNTOS - CORREGIDO                //
+        // ========================================== //
         public void AcumularPuntos(int idCliente, int idVenta, decimal monto)
         {
             if (monto <= 0) return;
+            if (idVenta <= 0) return;
 
             decimal puntos = Math.Floor(monto / MONTO_POR_PUNTO);
 
@@ -150,6 +163,7 @@ namespace Gasolinera.Controllers
                 PuntosGenerados = puntos,
                 TipoMovimiento = TipoMovimientoCashback.Acumulacion,
                 FechaMovimiento = DateTime.Now,
+                UsuarioResponsableId = User.Identity.GetUserId(),
                 Observaciones = $"Acumulación de {puntos} puntos por compra de ₡{monto:N2}"
             };
 

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Gasolinera</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/Site.css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
@@ -17,28 +18,66 @@
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
+                    <!-- ========================================== -->
+                    <!-- INICIO - Todos los usuarios               -->
+                    <!-- ========================================== -->
                     <li class="nav-item">
-                        @Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })
+                        @Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })
                     </li>
+
+                    <!-- ========================================== -->
+                    <!-- DASHBOARD - Solo Administrador            -->
+                    <!-- ========================================== -->
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <li class="nav-item">
+                            @Html.ActionLink("Dashboard", "Index", "Dashboard", null, new { @class = "nav-link" })
+                        </li>
+                    }
 
                     @if (User.Identity.IsAuthenticated)
                     {
+                        <!-- ========================================== -->
+                        <!-- MI PERFIL - Todos los autenticados        -->
+                        <!-- ========================================== -->
                         <li class="nav-item">
                             @Html.ActionLink("Mi Perfil", "Index", "Perfil", null, new { @class = "nav-link" })
                         </li>
 
-                        if (User.IsInRole("Administrador") || User.IsInRole("Moderador") ||
-                             User.IsInRole("Bodeguero") || User.IsInRole("Mecánico") ||
-                             User.IsInRole("Usuario"))
+                        <!-- ========================================== -->
+                        <!-- TIENDA - Todos los autenticados          -->
+                        <!-- ========================================== -->
+                        <li class="nav-item">
+                            @Html.ActionLink("Tienda", "Index", "Tienda", null, new { @class = "nav-link" })
+                        </li>
+
+                        <!-- ========================================== -->
+                        <!-- SERVICIOS MECÁNICOS - Todos los autenticados -->
+                        <!-- ========================================== -->
+                        <li class="nav-item">
+                            @Html.ActionLink("Servicios", "Index", "OrdenesServicio", null, new { @class = "nav-link" })
+                        </li>
+
+                        <!-- ========================================== -->
+                        <!-- PRODUCTOS - Admin, Moderador, Bodeguero   -->
+                        <!-- ========================================== -->
+                        if (User.IsInRole("Administrador") || User.IsInRole("Moderador") || User.IsInRole("Bodeguero"))
                         {
                             <li class="nav-item">
                                 @Html.ActionLink("Productos", "Index", "Productos", null, new { @class = "nav-link" })
                             </li>
-                            <li class="nav-item">
-                                @Html.ActionLink("Facturas", "Index", "Facturas", null, new { @class = "nav-link" })
-                            </li>
                         }
 
+                        <!-- ========================================== -->
+                        <!-- FACTURAS - Todos los autenticados         -->
+                        <!-- ========================================== -->
+                        <li class="nav-item">
+                            @Html.ActionLink("Facturas", "Index", "Facturas", null, new { @class = "nav-link" })
+                        </li>
+
+                        <!-- ========================================== -->
+                        <!-- VENTAS - Admin, Moderador, Bodeguero      -->
+                        <!-- ========================================== -->
                         if (User.IsInRole("Administrador") || User.IsInRole("Moderador") || User.IsInRole("Bodeguero"))
                         {
                             <li class="nav-item">
@@ -46,16 +85,39 @@
                             </li>
                         }
 
+                        <!-- ========================================== -->
+                        <!-- ORDENES SERVICIO - Admin, Moderador, Mecánico -->
+                        <!-- ========================================== -->
                         if (User.IsInRole("Administrador") || User.IsInRole("Moderador") || User.IsInRole("Mecánico"))
                         {
                             <li class="nav-item">
                                 @Html.ActionLink("Orden Servicios", "Index", "OrdenesServicio", null, new { @class = "nav-link" })
                             </li>
+                        }
+
+                        <!-- ========================================== -->
+                        <!-- CLIENTES - Admin, Moderador, Mecánico     -->
+                        <!-- ========================================== -->
+                        if (User.IsInRole("Administrador") || User.IsInRole("Moderador") || User.IsInRole("Mecánico"))
+                        {
                             <li class="nav-item">
                                 @Html.ActionLink("Clientes", "Index", "Clientes", null, new { @class = "nav-link" })
                             </li>
                         }
 
+                        <!-- ========================================== -->
+                        <!-- CATEGORÍAS - Admin, Bodeguero             -->
+                        <!-- ========================================== -->
+                        if (User.IsInRole("Administrador") || User.IsInRole("Bodeguero"))
+                        {
+                            <li class="nav-item">
+                                @Html.ActionLink("Categorías", "Index", "Categorias", null, new { @class = "nav-link" })
+                            </li>
+                        }
+
+                        <!-- ========================================== -->
+                        <!-- CASHBACK, USUARIOS, AUDITORÍA - Solo Admin -->
+                        <!-- ========================================== -->
                         if (User.IsInRole("Administrador"))
                         {
                             <li class="nav-item">
@@ -63,6 +125,9 @@
                             </li>
                             <li class="nav-item">
                                 @Html.ActionLink("Usuarios", "Index", "Usuarios", null, new { @class = "nav-link" })
+                            </li>
+                            <li class="nav-item">
+                                @Html.ActionLink("Auditoría", "Index", "Auditoria", null, new { @class = "nav-link" })
                             </li>
                         }
                     }
@@ -81,7 +146,6 @@
                 <ul class="navbar-nav">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <!-- BOTÓN CERRAR SESIÓN DIRECTAMENTE EN EL MENÚ -->
                         <li class="nav-item">
                             <span class="navbar-text text-white me-2">
                                 <i class="bi bi-person-circle"></i> @User.Identity.Name

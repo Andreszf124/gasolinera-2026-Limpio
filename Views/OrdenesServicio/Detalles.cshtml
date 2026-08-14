@@ -1,37 +1,92 @@
 ﻿@model Gasolinera.Models.Entidades.OrdenServicio
 
 @{
-    ViewBag.Title = "Detalle de Orden de Servicio";
+    ViewBag.Title = "Detalle de Servicio";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="card mt-4">
+<div class="card shadow mt-4">
     <div class="card-header bg-info text-white">
-        <h4 class="mb-0">Detalle de Orden de Servicio #@Model.IdOrdenServicio</h4>
+        <h4 class="mb-0">🔧 Detalle de Servicio #@Model.IdOrdenServicio</h4>
     </div>
 
     <div class="card-body">
-        <table class="table table-bordered">
-            <tbody>
-                <tr><th>Placa del Vehículo</th><td>@Model.PlacaVehiculo</td></tr>
-                <tr><th>Marca</th><td>@Model.MarcaModelo</td></tr>
-                <tr><th>Año del Vehículo</th><td>@Model.Anio</td></tr>
-                <tr><th>Tipo de Vehículo</th><td>@Model.TipoVehiculo</td></tr>
-                <tr><th>Diagnóstico del Vehículo</th><td>@Model.Diagnostico</td></tr>
-                <tr><th>Trabajos Realizados</th><td>@(Model.TrabajosRealizados ?? "No registrado")</td></tr>
-                <tr><th>Costo de Mano de Obra</th><td>₡@Model.CostoManoObra.ToString("N2")</td></tr>
-                <tr><th>Lista de Repuestos Utilizados</th><td>@(Model.ListaRepuestosUtilizados ?? "No registrado")</td></tr>
-                <tr><th>Cliente</th><td>@Model.NombreCliente</td></tr>
-                <tr><th>Mecánico Asignado</th><td>@(Model.Empleado != null ? Model.Empleado.NombreCompleto + " - " + Model.Empleado.Cargo : "No asignado")</td></tr>
-                <tr><th>Estado</th><td>@Model.Estado</td></tr>
-                <tr><th>Fecha de Entrada</th><td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td></tr>
-                <tr><th>Fecha de Finalización</th><td>@(Model.FechaFinalizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Pendiente")</td></tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Vehículo</th>
+                            <td>@(Model.Vehiculo?.Placa ?? "N/A") - @(Model.Vehiculo?.Marca ?? "") @(Model.Vehiculo?.Modelo ?? "")</td>
+                        </tr>
+                        <tr>
+                            <th>Cliente</th>
+                            <td>@Model.NombreCliente</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo de Servicio</th>
+                            <td>@Model.TipoServicio</td>
+                        </tr>
+                        <tr>
+                            <th>Estado</th>
+                            <td>
+                                <span class="badge @(Model.Estado == Gasolinera.Common.EstadoOrdenServicio.Pendiente ? "bg-warning" :
+                                                   Model.Estado == Gasolinera.Common.EstadoOrdenServicio.EnProgreso ? "bg-info" :
+                                                   Model.Estado == Gasolinera.Common.EstadoOrdenServicio.Completado ? "bg-success" :
+                                                   Model.Estado == Gasolinera.Common.EstadoOrdenServicio.Cancelado ? "bg-danger" : "bg-secondary")">
+                                    @Model.Estado
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Fecha de Entrada</th>
+                            <td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <th>Fecha de Finalización</th>
+                            <td>@(Model.FechaFinalizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Pendiente")</td>
+                        </tr>
+                        <tr>
+                            <th>Mecánico Asignado</th>
+                            <td>@(Model.Empleado?.NombreCompleto ?? "No asignado")</td>
+                        </tr>
+                        <tr>
+                            <th>Costo Estimado</th>
+                            <td>@(Model.CostoEstimado?.ToString("N2") ?? "No definido")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Descripción del Servicio</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>@Model.DescripcionServicio</p>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ObservacionesMecanico))
+                {
+                    <div class="card mt-3">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">Observaciones del Mecánico</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>@Model.ObservacionesMecanico</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
 
         <div class="mt-3">
-            @Html.ActionLink("Editar", "Editar", "OrdenesServicio", new { id = Model.IdOrdenServicio }, new { @class = "btn btn-warning" })
             @Html.ActionLink("Volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
+            @if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
+            {
+                @Html.ActionLink("Editar", "Editar", "OrdenesServicio", new { id = Model.IdOrdenServicio }, new { @class = "btn btn-warning" })
+            }
         </div>
     </div>
 </div>

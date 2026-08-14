@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "Dashboard Administrativo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2>Dashboard Administrativo</h2>
+        <p class="text-muted">Estadísticas y accesos rápidos del sistema.</p>
+        <hr />
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- ESTADÍSTICAS GENERALES                      -->
+<!-- ========================================== -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Productos</h5>
+                <h2 class="card-text">@ViewBag.TotalProductos</h2>
+                <p class="card-text small">Artículos en inventario</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Clientes</h5>
+                <h2 class="card-text">@ViewBag.TotalClientes</h2>
+                <p class="card-text small">Clientes registrados</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Ventas</h5>
+                <h2 class="card-text">@ViewBag.TotalVentas</h2>
+                <p class="card-text small">Total de ventas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Facturas</h5>
+                <h2 class="card-text">@ViewBag.TotalFacturas</h2>
+                <p class="card-text small">Facturas generadas</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- ESTADÍSTICAS DEL DÍA                       -->
+<!-- ========================================== -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Ventas del Día</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <p class="text-muted mb-0">Ventas realizadas</p>
+                        <h3>@ViewBag.VentasHoy</h3>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-muted mb-0">Total facturado</p>
+                        <h3>₡@ViewBag.TotalVentasHoy.ToString("N2")</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Órdenes de Servicio</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-0">Pendientes</p>
+                <h3>@ViewBag.OrdenesPendientes</h3>
+                @if (ViewBag.OrdenesPendientes > 0)
+                {
+                    <div class="alert alert-warning mt-2 mb-0 small">
+                        Hay @ViewBag.OrdenesPendientes órdenes pendientes de atención.
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-success mt-2 mb-0 small">
+                        No hay órdenes pendientes.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- ACCESOS RÁPIDOS                            -->
+<!-- ========================================== -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h4>Accesos Rápidos</h4>
+        <hr />
+    </div>
+
+    <div class="col-md-3">
+        <a href="@Url.Action("Index", "Usuarios")" class="text-decoration-none">
+            <div class="card text-center bg-dark text-white shadow-sm quick-access-card">
+                <div class="card-body py-4">
+                    <h2>👥</h2>
+                    <p class="mb-0">Usuarios</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="@Url.Action("Index", "Cashback")" class="text-decoration-none">
+            <div class="card text-center bg-success text-white shadow-sm quick-access-card">
+                <div class="card-body py-4">
+                    <h2>💰</h2>
+                    <p class="mb-0">Cashback</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="@Url.Action("Index", "Auditoria")" class="text-decoration-none">
+            <div class="card text-center bg-info text-white shadow-sm quick-access-card">
+                <div class="card-body py-4">
+                    <h2>📋</h2>
+                    <p class="mb-0">Auditoría</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="@Url.Action("Crear", "Ventas")" class="text-decoration-none">
+            <div class="card text-center bg-primary text-white shadow-sm quick-access-card">
+                <div class="card-body py-4">
+                    <h2>🛒</h2>
+                    <p class="mb-0">Nueva Venta</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>

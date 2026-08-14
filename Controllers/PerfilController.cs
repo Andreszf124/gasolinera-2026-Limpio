@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Gasolinera.Models;
+using Gasolinera.Infrastructure.DbContexts;
 
 namespace Gasolinera.Controllers
 {
@@ -11,6 +13,12 @@ namespace Gasolinera.Controllers
     public class PerfilController : Controller
     {
         private ApplicationUserManager _userManager;
+        private readonly GasolineraContext _contexto;
+
+        public PerfilController()
+        {
+            _contexto = new GasolineraContext();
+        }
 
         public ApplicationUserManager UserManager
         {
@@ -28,6 +36,27 @@ namespace Gasolinera.Controllers
             {
                 return HttpNotFound();
             }
+
+            // Obtener puntos del cliente
+            var cliente = _contexto.Clientes.FirstOrDefault(c => c.Correo == usuario.Email);
+            if (cliente != null)
+            {
+                var cashback = _contexto.Cashbacks.FirstOrDefault(c => c.IdCliente == cliente.IdCliente);
+                ViewBag.PuntosDisponibles = cashback?.PuntosDisponibles ?? 0;
+                ViewBag.PuntosAcumulados = cashback?.PuntosAcumulados ?? 0;
+                ViewBag.PuntosCanjeados = cashback?.PuntosCanjeados ?? 0;
+                ViewBag.ClienteId = cliente.IdCliente;
+            }
+            else
+            {
+                ViewBag.PuntosDisponibles = 0;
+                ViewBag.PuntosAcumulados = 0;
+                ViewBag.PuntosCanjeados = 0;
+                ViewBag.ClienteId = 0;
+            }
+
+            var roles = await UserManager.GetRolesAsync(userId);
+            ViewBag.Roles = roles;
 
             return View(usuario);
         }
@@ -81,6 +110,20 @@ namespace Gasolinera.Controllers
             }
 
             return View(usuario);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _contexto.Dispose();
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+            }
+            base.Dispose(disposing);
         }
     }
 }

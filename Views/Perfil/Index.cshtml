@@ -21,41 +21,89 @@
             <div class="alert alert-danger">@TempData["MensajeError"]</div>
         }
 
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <th>Nombre Completo</th>
-                    <td>@Model.NombreCompleto</td>
-                </tr>
-                <tr>
-                    <th>Correo Electrónico</th>
-                    <td>@Model.Email</td>
-                </tr>
-                <tr>
-                    <th>Roles</th>
-                    <td>
-                        @{
-                            var roles = ViewBag.Roles as IList<string>;
-                            if (roles != null && roles.Any())
-                            {
-                                foreach (var rol in roles)
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <td>@Model.NombreCompleto</td>
+                        </tr>
+                        <tr>
+                            <th>Correo Electrónico</th>
+                            <td>@Model.Email</td>
+                        </tr>
+                        <tr>
+                            <th>Roles</th>
+                            <td>
+                                @if (ViewBag.Roles != null)
                                 {
-                                    <span class="badge @(rol == "Administrador" ? "bg-danger" : rol == "Moderador" ? "bg-warning" : "bg-secondary")">
-                                        @rol
-                                    </span>
+                                    var roles = (IList<string>)ViewBag.Roles;
+                                    if (roles.Any())
+                                    {
+                                        foreach (var rol in roles)
+                                        {
+                                            <span class="badge @(rol == "Administrador" ? "bg-danger" : rol == "Moderador" ? "bg-warning" : "bg-secondary")">
+                                                @rol
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Usuario</span>
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Usuario</span>
-                            }
-                        }
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                                else
+                                {
+                                    <span class="badge bg-secondary">Usuario</span>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        @Html.ActionLink("Editar Perfil", "Editar", "Perfil", null, new { @class = "btn btn-warning" })
-        @Html.ActionLink("Volver", "Index", "Home", null, new { @class = "btn btn-secondary" })
+            <!-- ========================================== -->
+            <!-- PUNTOS DE CASHBACK                         -->
+            <!-- ========================================== -->
+            <div class="col-md-6">
+                <div class="card bg-light">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">💰 Mis Puntos Cashback</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <h3>@ViewBag.PuntosDisponibles</h3>
+                                <p class="text-muted">Disponibles</p>
+                            </div>
+                            <div class="col-4">
+                                <h3>@ViewBag.PuntosAcumulados</h3>
+                                <p class="text-muted">Acumulados</p>
+                            </div>
+                            <div class="col-4">
+                                <h3>@ViewBag.PuntosCanjeados</h3>
+                                <p class="text-muted">Canjeados</p>
+                            </div>
+                        </div>
+                        <hr />
+                        <p class="text-muted small text-center">
+                            <strong>Regla:</strong> ₡200 = 1 punto. Acumula con cada compra en la tienda.
+                            <br />
+                            <a href="@Url.Action("Index", "Tienda")" class="btn btn-sm btn-success mt-2">Ir a la Tienda</a>
+                            @if (ViewBag.ClienteId > 0)
+                            {
+                                <a href="@Url.Action("SaldoCliente", "Cashback", new { idCliente = ViewBag.ClienteId })" class="btn btn-sm btn-info mt-2">Ver historial</a>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            @Html.ActionLink("Editar Perfil", "Editar", "Perfil", null, new { @class = "btn btn-warning" })
+            @Html.ActionLink("Volver", "Index", "Home", null, new { @class = "btn btn-secondary" })
+        </div>
     </div>
 </div>
