@@ -1,0 +1,43 @@
+﻿@model Gasolinera.Models.Entidades.Cliente
+
+@{
+    ViewBag.Title = "Detalle de Cliente";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mt-4">
+    <div class="card-header bg-info text-white">
+        <h4 class="mb-0">Detalle de Cliente</h4>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>ID</th>
+                    <td>@Model.IdCliente</td>
+                </tr>
+                <tr>
+                    <th>Nombre Completo</th>
+                    <td>@Model.NombreCompleto</td>
+                </tr>
+                <tr>
+                    <th>Correo Electrónico</th>
+                    <td>@Model.Correo</td>
+                </tr>
+                <tr>
+                    <th>Teléfono</th>
+                    <td>@Model.Telefono</td>
+                </tr>
+                <tr>
+                    <th>Dirección</th>
+                    <td>@Model.Direccion</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-3">
+            @Html.ActionLink("Volver", "Index", "Clientes", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+﻿@model Gasolinera.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "Mi Perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Mi Perfil</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Nombre Completo</th>
+                    <td>@Model.NombreCompleto</td>
+                </tr>
+                <tr>
+                    <th>Correo Electrónico</th>
+                    <td>@Model.Email</td>
+                </tr>
+                <tr>
+                    <th>Roles</th>
+                    <td>
+                        @{
+                            var roles = ViewBag.Roles as IList<string>;
+                            if (roles != null && roles.Any())
+                            {
+                                foreach (var rol in roles)
+                                {
+                                    <span class="badge @(rol == "Administrador" ? "bg-danger" : rol == "Moderador" ? "bg-warning" : "bg-secondary")">
+                                        @rol
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Usuario</span>
+                            }
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        @Html.ActionLink("Editar Perfil", "Editar", "Perfil", null, new { @class = "btn btn-warning" })
+        @Html.ActionLink("Volver", "Index", "Home", null, new { @class = "btn btn-secondary" })
+    </div>
+</div>

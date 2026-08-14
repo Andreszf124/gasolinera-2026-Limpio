@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Gasolinera.Models.Entidades.Cliente>
+
+@{
+    ViewBag.Title = "Clientes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Clientes</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info">No hay clientes registrados.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var cliente in Model)
+                        {
+                            <tr>
+                                <td>@cliente.IdCliente</td>
+                                <td>@cliente.NombreCompleto</td>
+                                <td>@cliente.Correo</td>
+                                <td>@cliente.Telefono</td>
+                                <td>@cliente.Direccion</td>
+                                <td>
+                                    @Html.ActionLink("Detalle", "Detalles", "Clientes", new { id = cliente.IdCliente }, new { @class = "btn btn-info btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

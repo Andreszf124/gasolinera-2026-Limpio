@@ -149,7 +149,9 @@
     <Compile Include="Common\EstadoOrdenServicio.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CashbackController.cs" />
+    <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\FacturasController.cs" />
+    <Compile Include="Controllers\PerfilController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrdenesServicioController.cs" />
@@ -281,6 +283,10 @@
     <Content Include="Views\Cashback\HistorialCliente.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Registro.cshtml" />
+    <Content Include="Views\Perfil\Index.cshtml" />
+    <Content Include="Views\Perfil\Editar.cshtml" />
+    <Content Include="Views\Clientes\index.cshtml" />
+    <Content Include="Views\Clientes\Detalles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
