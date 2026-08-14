@@ -1,36 +1,41 @@
-﻿@using Gasolinera.Models.Entidades
-@model OrdenServicio
+﻿@model Gasolinera.Models.Entidades.Venta
 
 @{
-    ViewBag.Title = "Detalle de Orden de Servicio";
+    ViewBag.Title = "Detalle de Venta";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="card mt-4">
     <div class="card-header bg-info text-white">
-        <h4 class="mb-0">Detalle de Orden de Servicio #@Model.IdOrdenServicio</h4>
+        <h4 class="mb-0">Detalle de Venta #@Model.IdVenta</h4>
     </div>
 
     <div class="card-body">
         <table class="table table-bordered">
             <tbody>
-                <tr><th>Placa del Vehículo</th><td>@Model.PlacaVehiculo</td></tr>
-                <tr><th>Marca</th><td>@Model.MarcaModelo</td></tr>
-                <tr><th>Año del Vehículo</th><td>@Model.Anio</td></tr>
-                <tr><th>Tipo de Vehículo</th><td>@Model.TipoVehiculo</td></tr>
-                <tr><th>Diagnóstico del Vehículo</th><td>@Model.Diagnostico</td></tr>
-                <tr><th>Trabajos Realizados</th><td>@(Model.TrabajosRealizados ?? "No registrado")</td></tr>
-                <tr><th>Costo de Mano de Obra</th><td>₡@Model.CostoManoObra.ToString("N2")</td></tr>
-                <tr><th>Lista de Repuestos Utilizados</th><td>@(Model.ListaRepuestosUtilizados ?? "No registrado")</td></tr>
-                <tr><th>Cliente</th><td>@Model.NombreCliente</td></tr>
-                <tr><th>Mecánico Asignado</th><td>@(Model.Empleado?.NombreCompleto ?? "No asignado")</td></tr>
+                <tr><th>Fecha</th><td>@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                <tr><th>Cliente</th><td>@(Model.Cliente != null ? Model.Cliente.NombreCompleto : "N/A")</td></tr>
+                <tr><th>Empleado</th><td>@(Model.Empleado != null ? Model.Empleado.NombreCompleto : "N/A")</td></tr>
+                <tr><th>Tipo de Venta</th><td>@Model.TipoVenta</td></tr>
+                <tr><th>Tipo de Pago</th><td>@Model.TipoPago</td></tr>
+                <tr><th>Método de Pago</th><td>@Model.MetodoPago</td></tr>
+                <tr><th>Subtotal</th><td>₡@Model.Subtotal.ToString("N2")</td></tr>
+                <tr><th>Descuento</th><td>₡@Model.Descuento.ToString("N2")</td></tr>
+                <tr><th>Impuesto</th><td>₡@Model.Impuesto.ToString("N2")</td></tr>
+                <tr><th>Total</th><td><strong>₡@Model.Total.ToString("N2")</strong></td></tr>
+                <tr><th>Puntos Usados</th><td>@Model.PuntosUsados.ToString("N0")</td></tr>
                 <tr><th>Estado</th><td>@Model.Estado</td></tr>
-                <tr><th>Fecha de Entrada</th><td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td></tr>
-                <tr><th>Fecha de Finalización</th><td>@(Model.FechaFinalizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Pendiente")</td></tr>
+                <tr>
+                    <th>Orden de Servicio</th>
+                    <td>@(Model.IdOrdenServicio != null ? "Orden #" + Model.IdOrdenServicio : "Ninguna")</td>
+                </tr>
             </tbody>
         </table>
 
-        @Html.ActionLink("Editar", "Editar", "OrdenesServicio", new { id = Model.IdOrdenServicio }, new { @class = "btn btn-warning" })
-        @Html.ActionLink("Volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
+        @if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
+        {
+            @Html.ActionLink("Editar", "Editar", "Ventas", new { id = Model.IdVenta }, new { @class = "btn btn-warning" })
+        }
+        @Html.ActionLink("Volver", "Index", "Ventas", null, new { @class = "btn btn-secondary" })
     </div>
 </div>

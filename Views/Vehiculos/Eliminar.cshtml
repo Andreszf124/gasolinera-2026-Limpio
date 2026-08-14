@@ -1,0 +1,41 @@
+﻿@model Gasolinera.Models.Entidades.Vehiculo
+
+@{
+    ViewBag.Title = "Eliminar Vehículo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card border-danger mt-4">
+    <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">Eliminar Vehículo</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <strong>¿Está seguro de que desea eliminar este vehículo?</strong>
+            <br />
+            <span class="text-muted">Esta acción no se puede deshacer.</span>
+        </div>
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr><th>Placa</th><td>@Model.Placa</td></tr>
+                <tr><th>Marca</th><td>@Model.Marca</td></tr>
+                <tr><th>Modelo</th><td>@Model.Modelo</td></tr>
+                <tr><th>Año</th><td>@Model.Anio</td></tr>
+                <tr><th>Tipo</th><td>@Model.TipoVehiculo</td></tr>
+                <tr><th>Color</th><td>@(string.IsNullOrEmpty(Model.Color) ? "No indicado" : Model.Color)</td></tr>
+                <tr><th>Fecha de Registro</th><td>@Model.FechaRegistro.ToString("dd/MM/yyyy")</td></tr>
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Eliminar", "Vehiculos", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("id", Model.IdVehiculo)
+
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            @Html.ActionLink("No, volver", "Index", "Vehiculos", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>

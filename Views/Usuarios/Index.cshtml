@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Gasolinera.Models.UsuarioViewModel>
+
+@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Usuarios del Sistema</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info">No hay usuarios registrados.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var usuario in Model)
+                        {
+                            <tr>
+                                <td>@(string.IsNullOrEmpty(usuario.NombreCompleto) ? "No indicado" : usuario.NombreCompleto)</td>
+                                <td>@usuario.Correo</td>
+                                <td>
+                                    @if (usuario.Rol == "Sin rol")
+                                    {
+                                        <span class="badge bg-secondary">@usuario.Rol</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary">@usuario.Rol</span>
+                                    }
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Cambiar Rol", "Editar", "Usuarios", new { id = usuario.Id }, new { @class = "btn btn-warning btn-sm" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

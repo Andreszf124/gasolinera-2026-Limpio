@@ -1,0 +1,41 @@
+﻿@model Gasolinera.Models.UsuarioViewModel
+
+@{
+    ViewBag.Title = "Cambiar Rol";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mt-4">
+    <div class="card-header bg-warning">
+        <h4 class="mb-0">Cambiar Rol de Usuario</h4>
+    </div>
+
+    <div class="card-body">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+        }
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr><th>Nombre</th><td>@(string.IsNullOrEmpty(Model.NombreCompleto) ? "No indicado" : Model.NombreCompleto)</td></tr>
+                <tr><th>Correo</th><td>@Model.Correo</td></tr>
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Editar", "Usuarios", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Rol, new { @class = "form-label" })
+                @Html.DropDownListFor(m => m.Rol, (List<SelectListItem>)ViewBag.Roles, "-- Seleccione un rol --", new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.Rol, "", new { @class = "text-danger" })
+            </div>
+
+            <button type="submit" class="btn btn-success">Guardar</button>
+            @Html.ActionLink("Volver", "Index", "Usuarios", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>

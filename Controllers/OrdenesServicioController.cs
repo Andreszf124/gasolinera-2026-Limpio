@@ -73,6 +73,7 @@ namespace Gasolinera.Controllers
             ViewBag.Vehiculos = new SelectList(vehiculos, "IdVehiculo", "Placa");
             ViewBag.TiposServicio = ObtenerTiposServicio();
             ViewBag.Empleados = ObtenerEmpleados();
+            ViewBag.Estados = ObtenerEstados();
 
             return View(new OrdenServicio
             {
@@ -86,19 +87,30 @@ namespace Gasolinera.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Crear(OrdenServicio ordenServicio)
         {
+            var cliente = ObtenerCliente();
+
+            if (cliente == null)
+            {
+                TempData["MensajeError"] = "No se encontró un cliente asociado a su cuenta.";
+                return RedirectToAction("Index");
+            }
+
             if (!ModelState.IsValid)
             {
-                var cliente = ObtenerCliente();
-                ViewBag.Vehiculos = new SelectList(_contexto.Vehiculos.Where(v => v.IdCliente == cliente.IdCliente), "IdVehiculo", "Placa");
+                var vehiculos = _contexto.Vehiculos
+                    .Where(v => v.IdCliente == cliente.IdCliente)
+                    .ToList();
+
+                ViewBag.Vehiculos = new SelectList(vehiculos, "IdVehiculo", "Placa");
                 ViewBag.TiposServicio = ObtenerTiposServicio();
                 ViewBag.Empleados = ObtenerEmpleados();
+                ViewBag.Estados = ObtenerEstados();
                 TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
                 return View(ordenServicio);
             }
 
             // Asignar nombre de cliente
-            var cliente = ObtenerCliente();
-            ordenServicio.NombreCliente = cliente?.NombreCompleto ?? User.Identity.Name;
+            ordenServicio.NombreCliente = cliente.NombreCompleto;
 
             _repositorio.Agregar(ordenServicio);
 
@@ -136,14 +148,129 @@ namespace Gasolinera.Controllers
         }
 
         // ========================================== //
+        // EDITAR ORDEN DE SERVICIO                   //
+        // ========================================== //
+        [HttpGet]
+        [Authorize(Roles = "Administrador, Moderador, Mecánico")]
+        public ActionResult Editar(int id)
+        {
+            var orden = _repositorio.ObtenerPorId(id);
+
+            if (orden == null)
+            {
+                TempData["MensajeError"] = "La orden de servicio no existe.";
+                return RedirectToAction("Index");
+            }
+
+            CargarListas();
+            return View(orden);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador, Moderador, Mecánico")]
+        public ActionResult Editar(OrdenServicio ordenServicio)
+        {
+            if (!ModelState.IsValid)
+            {
+                CargarListas();
+                TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
+                return View(ordenServicio);
+            }
+
+            _repositorio.Actualizar(ordenServicio);
+
+            TempData["MensajeExito"] = "Orden de servicio actualizada correctamente.";
+            return RedirectToAction("Index");
+        }
+
+        // ========================================== //
+        // CANCELAR ORDEN DE SERVICIO                 //
+        // ========================================== //
+        [HttpGet]
+        public ActionResult Eliminar(int id)
+        {
+            var orden = _repositorio.ObtenerPorId(id);
+
+            if (orden == null)
+            {
+                TempData["MensajeError"] = "La orden de servicio no existe.";
+                return RedirectToAction("Index");
+            }
+
+            if (!PuedeModificar(orden))
+            {
+                TempData["MensajeError"] = "No tiene permisos para cancelar esta orden de servicio.";
+                return RedirectToAction("Index");
+            }
+
+            return View(orden);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Eliminar")]
+        public ActionResult EliminarConfirmado(int id)
+        {
+            var orden = _repositorio.ObtenerPorId(id);
+
+            if (orden == null)
+            {
+                TempData["MensajeError"] = "La orden de servicio no existe.";
+                return RedirectToAction("Index");
+            }
+
+            if (!PuedeModificar(orden))
+            {
+                TempData["MensajeError"] = "No tiene permisos para cancelar esta orden de servicio.";
+                return RedirectToAction("Index");
+            }
+
+            _repositorio.Eliminar(orden);
+
+            TempData["MensajeExito"] = "Orden de servicio cancelada correctamente.";
+            return RedirectToAction("Index");
+        }
+
+        // ========================================== //
         // MÉTODOS PRIVADOS                           //
         // ========================================== //
+        private bool PuedeModificar(OrdenServicio orden)
+        {
+            if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
+            {
+                return true;
+            }
+
+            var cliente = ObtenerCliente();
+
+            if (cliente == null)
+            {
+                return false;
+            }
+
+            var vehiculo = _contexto.Vehiculos.FirstOrDefault(v => v.IdVehiculo == orden.IdVehiculo);
+
+            return vehiculo != null && vehiculo.IdCliente == cliente.IdCliente;
+        }
+
         private Cliente ObtenerCliente()
         {
             return _contexto.Clientes.FirstOrDefault(c => c.Correo == User.Identity.Name);
         }
 
-        private List<SelectListItem> ObtenerEmpleados()
+        // Las vistas Crear y Editar reciben estas listas como SelectList
+        private void CargarListas()
+        {
+            var vehiculos = _contexto.Vehiculos.ToList();
+
+            ViewBag.Vehiculos = new SelectList(vehiculos, "IdVehiculo", "Placa");
+            ViewBag.TiposServicio = ObtenerTiposServicio();
+            ViewBag.Empleados = ObtenerEmpleados();
+            ViewBag.Estados = ObtenerEstados();
+        }
+
+        private SelectList ObtenerEmpleados()
         {
             var empleados = _contexto.Empleados
                 .Select(e => new SelectListItem
@@ -153,13 +280,12 @@ namespace Gasolinera.Controllers
                 })
                 .ToList();
 
-            empleados.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un mecánico --" });
-            return empleados;
+            return new SelectList(empleados, "Value", "Text");
         }
 
-        private List<SelectListItem> ObtenerTiposServicio()
+        private SelectList ObtenerTiposServicio()
         {
-            return new List<SelectListItem>
+            var tipos = new List<SelectListItem>
             {
                 new SelectListItem { Text = "Cambio de Aceite", Value = "Cambio de Aceite" },
                 new SelectListItem { Text = "Revisión de Frenos", Value = "Revisión de Frenos" },
@@ -174,9 +300,11 @@ namespace Gasolinera.Controllers
                 new SelectListItem { Text = "Escaneo Computarizado", Value = "Escaneo Computarizado" },
                 new SelectListItem { Text = "Otro", Value = "Otro" }
             };
+
+            return new SelectList(tipos, "Value", "Text");
         }
 
-        private List<SelectListItem> ObtenerEstados()
+        private SelectList ObtenerEstados()
         {
             List<SelectListItem> estados = new List<SelectListItem>();
 
@@ -186,8 +314,7 @@ namespace Gasolinera.Controllers
             estados.Add(new SelectListItem { Text = "Entregado", Value = "4" });
             estados.Add(new SelectListItem { Text = "Cancelado", Value = "5" });
 
-            estados.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un estado --" });
-            return estados;
+            return new SelectList(estados, "Value", "Text");
         }
 
         protected override void Dispose(bool disposing)

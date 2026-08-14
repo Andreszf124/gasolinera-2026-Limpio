@@ -81,6 +81,13 @@ namespace Gasolinera.Controllers
         public ActionResult Eliminar(int id)
         {
             var usuarioCliente = ObtenerClientePorUsuario();
+
+            if (usuarioCliente == null)
+            {
+                TempData["MensajeError"] = "No se encontró un cliente asociado a su cuenta.";
+                return RedirectToAction("Index");
+            }
+
             var vehiculo = _contexto.Vehiculos
                 .FirstOrDefault(v => v.IdVehiculo == id && v.IdCliente == usuarioCliente.IdCliente);
 
@@ -99,6 +106,13 @@ namespace Gasolinera.Controllers
         public ActionResult EliminarConfirmado(int id)
         {
             var usuarioCliente = ObtenerClientePorUsuario();
+
+            if (usuarioCliente == null)
+            {
+                TempData["MensajeError"] = "No se encontró un cliente asociado a su cuenta.";
+                return RedirectToAction("Index");
+            }
+
             var vehiculo = _contexto.Vehiculos
                 .FirstOrDefault(v => v.IdVehiculo == id && v.IdCliente == usuarioCliente.IdCliente);
 

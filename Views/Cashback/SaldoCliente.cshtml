@@ -1,33 +1,99 @@
-﻿using Microsoft.Owin;
-using Owin;
-using Gasolinera.Models;
-using Microsoft.AspNet.Identity;
+﻿@model Gasolinera.Models.Entidades.Cashback
 
-[assembly: OwinStartup(typeof(Gasolinera.Startup))]
+@{
+    ViewBag.Title = "Saldo de Puntos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-namespace Gasolinera
-{
-    public class Startup
-    {
-        public void Configuration(IAppBuilder app)
+<div class="card shadow mt-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Saldo de Puntos - @ViewBag.NombreCliente</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
         {
-            app.CreatePerOwinContext<ApplicationDbContext>
-    (ApplicationDbContext.Create);
-    app.CreatePerOwinContext<ApplicationUserManager>
-        (ApplicationUserManager.Create);
-        app.CreatePerOwinContext<ApplicationSignInManager>
-            (ApplicationSignInManager.Create);
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
 
-            app.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Puntos Disponibles</h6>
+                        <h3 class="mb-0">@Model.PuntosDisponibles.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Puntos Acumulados</h6>
+                        <h3 class="mb-0">@Model.PuntosAcumulados.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-dark text-white">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Puntos Canjeados</h6>
+                        <h3 class="mb-0">@Model.PuntosCanjeados.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Última actualización</th>
+                    <td>@Model.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</td>
+                </tr>
+                <tr>
+                    <th>Equivalente en colones</th>
+                    <td>₡@((Model.PuntosDisponibles * 200).ToString("N2"))</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr />
+
+        <h5>Canjear Puntos</h5>
+
+        @if (Model.PuntosDisponibles <= 0)
+        {
+            <div class="alert alert-info">El cliente no tiene puntos disponibles para canjear.</div>
+        }
+        else
+        {
+            using (Html.BeginForm("CanjearPuntos", "Cashback", FormMethod.Post))
             {
-            AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-            LoginPath = new PathString("/Account/Login"),
-            LogoutPath = new PathString("/Account/Logout"),
-            CookieName = "GasolineraAuth",
-            CookieHttpOnly = true,
-            SlidingExpiration = true,
-            ExpireTimeSpan = System.TimeSpan.FromDays(1)
-            });
+                @Html.AntiForgeryToken()
+                @Html.Hidden("idCliente", Model.IdCliente)
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Puntos a canjear</label>
+                            <input type="number" name="puntos" class="form-control" step="1" min="1"
+                                   max="@Model.PuntosDisponibles" placeholder="0" required />
+                            <div class="form-text">Cada punto equivale a ₡200 de descuento.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Canjear</button>
             }
-            }
-            }
+        }
+
+        <hr />
+
+        @Html.ActionLink("Ver Historial", "HistorialCliente", "Cashback", new { idCliente = Model.IdCliente }, new { @class = "btn btn-info" })
+        @Html.ActionLink("Volver", "Index", "Cashback", null, new { @class = "btn btn-secondary" })
+    </div>
+</div>

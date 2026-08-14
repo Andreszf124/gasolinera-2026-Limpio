@@ -44,15 +44,31 @@ namespace Gasolinera.Controllers
         }
 
         [HttpGet]
-        public ActionResult SaldoCliente(int idCliente)
+        public ActionResult SaldoCliente(int? idCliente)
         {
-            var cashback = _cashbackRepo.ObtenerPorCliente(idCliente);
+            if (idCliente == null)
+            {
+                TempData["MensajeError"] = "Debe seleccionar un cliente.";
+                return RedirectToAction("Index");
+            }
+
+            var cliente = _contexto.Clientes.Find(idCliente.Value);
+
+            if (cliente == null)
+            {
+                TempData["MensajeError"] = "El cliente no existe.";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.NombreCliente = cliente.NombreCompleto;
+
+            var cashback = _cashbackRepo.ObtenerPorCliente(idCliente.Value);
 
             if (cashback == null)
             {
                 cashback = new Cashback
                 {
-                    IdCliente = idCliente,
+                    IdCliente = idCliente.Value,
                     PuntosAcumulados = 0,
                     PuntosCanjeados = 0,
                     PuntosDisponibles = 0,
@@ -115,9 +131,26 @@ namespace Gasolinera.Controllers
         }
 
         [HttpGet]
-        public ActionResult HistorialCliente(int idCliente)
+        public ActionResult HistorialCliente(int? idCliente)
         {
-            var movimientos = _movimientoCashbackRepo.ObtenerPorCliente(idCliente);
+            if (idCliente == null)
+            {
+                TempData["MensajeError"] = "Debe seleccionar un cliente.";
+                return RedirectToAction("Index");
+            }
+
+            var cliente = _contexto.Clientes.Find(idCliente.Value);
+
+            if (cliente == null)
+            {
+                TempData["MensajeError"] = "El cliente no existe.";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.NombreCliente = cliente.NombreCompleto;
+            ViewBag.IdCliente = cliente.IdCliente;
+
+            var movimientos = _movimientoCashbackRepo.ObtenerPorCliente(idCliente.Value);
             return View(movimientos);
         }
 

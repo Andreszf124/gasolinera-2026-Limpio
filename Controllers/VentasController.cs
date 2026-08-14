@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using Gasolinera.Infrastructure.DbContexts;
@@ -8,6 +9,7 @@ using Gasolinera.Models.Entidades;
 
 namespace Gasolinera.Controllers
 {
+    [Authorize]
     public class VentasController : Controller
     {
         private readonly IVentaRepository _repositorio;

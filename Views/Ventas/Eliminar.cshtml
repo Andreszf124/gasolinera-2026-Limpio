@@ -1,41 +1,38 @@
-﻿@using Gasolinera.Models.Entidades
-@model OrdenServicio
+﻿@model Gasolinera.Models.Entidades.Venta
 
 @{
-    ViewBag.Title = "Eliminar Orden de Servicio";
+    ViewBag.Title = "Eliminar Venta";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="card border-danger mt-4">
+<div class="card mt-4">
     <div class="card-header bg-danger text-white">
-        <h4 class="mb-0">Eliminar Orden de Servicio #@Model.IdOrdenServicio</h4>
+        <h4 class="mb-0">Eliminar Venta #@Model.IdVenta</h4>
     </div>
 
     <div class="card-body">
         <div class="alert alert-warning">
-            ¿Está seguro de que desea eliminar esta orden de servicio?
+            ¿Está seguro que desea eliminar esta venta? Esta acción no se puede deshacer.
         </div>
 
         <table class="table table-bordered">
             <tbody>
-                <tr><th>Placa del Vehículo</th><td>@Model.PlacaVehiculo</td></tr>
-                <tr><th>Marca</th><td>@Model.MarcaModelo</td></tr>
-                <tr><th>Año del Vehículo</th><td>@Model.Anio</td></tr>
-                <tr><th>Tipo de Vehículo</th><td>@Model.TipoVehiculo</td></tr>
-                <tr><th>Cliente</th><td>@Model.NombreCliente</td></tr>
+                <tr><th>Fecha</th><td>@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                <tr><th>Cliente</th><td>@(Model.Cliente != null ? Model.Cliente.NombreCompleto : "N/A")</td></tr>
+                <tr><th>Tipo de Venta</th><td>@Model.TipoVenta</td></tr>
+                <tr><th>Tipo de Pago</th><td>@Model.TipoPago</td></tr>
+                <tr><th>Total</th><td><strong>₡@Model.Total.ToString("N2")</strong></td></tr>
                 <tr><th>Estado</th><td>@Model.Estado</td></tr>
-                <tr><th>Fecha de Entrada</th><td>@Model.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td></tr>
-                <tr><th>Costo de Mano de Obra</th><td>₡@Model.CostoManoObra.ToString("N2")</td></tr>
             </tbody>
         </table>
 
-        @using (Html.BeginForm("Eliminar", "OrdenesServicio", FormMethod.Post))
+        @using (Html.BeginForm("Eliminar", "Ventas", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            @Html.Hidden("id", Model.IdOrdenServicio)
+            @Html.Hidden("id", Model.IdVenta)
 
-            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-            @Html.ActionLink("No, volver", "Index", "OrdenesServicio", null, new { @class = "btn btn-secondary" })
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            @Html.ActionLink("Volver", "Index", "Ventas", null, new { @class = "btn btn-secondary" })
         }
     </div>
 </div>
