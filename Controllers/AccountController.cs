@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -28,9 +24,6 @@ namespace Gasolinera.Controllers
             private set => _signInManager = value;
         }
 
-        // ==========================================
-        // LOGIN
-        // ==========================================
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
@@ -45,9 +38,7 @@ namespace Gasolinera.Controllers
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             var result = await SignInManager.PasswordSignInAsync(
                 model.Correo,
@@ -56,17 +47,12 @@ namespace Gasolinera.Controllers
                 shouldLockout: false);
 
             if (result == SignInStatus.Success)
-            {
                 return RedirectToLocal(returnUrl);
-            }
 
             ModelState.AddModelError("", "Correo o contraseña incorrectos.");
             return View(model);
         }
 
-        // ==========================================
-        // REGISTRO
-        // ==========================================
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Registro()
@@ -80,9 +66,7 @@ namespace Gasolinera.Controllers
         public async Task<ActionResult> Registro(RegistroViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             var user = new ApplicationUser
             {
@@ -95,9 +79,7 @@ namespace Gasolinera.Controllers
 
             if (result.Succeeded)
             {
-                // Asignar rol por defecto "Usuario"
                 await UserManager.AddToRoleAsync(user.Id, "Usuario");
-
                 await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
                 TempData["MensajeExito"] = "Registro exitoso. Bienvenido al sistema.";
@@ -105,16 +87,12 @@ namespace Gasolinera.Controllers
             }
 
             foreach (var error in result.Errors)
-            {
                 ModelState.AddModelError("", error);
-            }
 
             return View(model);
         }
 
-        // ==========================================
-        // CERRAR SESIÓN
-        // ==========================================
+   
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CerrarSesion()
@@ -122,15 +100,15 @@ namespace Gasolinera.Controllers
             HttpContext.GetOwinContext().Authentication.SignOut(
                 DefaultAuthenticationTypes.ApplicationCookie);
 
+            TempData["MensajeExito"] = "Sesión cerrada correctamente.";
             return RedirectToAction("Login", "Account");
         }
 
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
-            {
                 return Redirect(returnUrl);
-            }
+
             return RedirectToAction("Index", "Home");
         }
 
