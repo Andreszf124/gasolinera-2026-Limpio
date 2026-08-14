@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Gasolinera.Models.Entidades.Factura>
+
+@{
+    ViewBag.Title = "Facturas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Facturas</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        @if (TempData["MensajeAdvertencia"] != null)
+        {
+            <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
+        }
+
+        <div class="mb-3">
+            @if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
+            {
+                @Html.ActionLink("Nueva Factura", "Crear", "Facturas", null, new { @class = "btn btn-primary" })
+            }
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info">No hay facturas registradas.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Venta</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var factura in Model)
+                        {
+                            <tr>
+                                <td>@factura.IdFactura</td>
+                                <td>@factura.NumeroFactura</td>
+                                <td>@factura.FechaEmision.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@(factura.Venta?.Cliente?.NombreCompleto ?? "N/A")</td>
+                                <td>#@factura.IdVenta</td>
+                                <td>₡@factura.Total.ToString("N2")</td>
+                                <td>
+                                    @Html.ActionLink("Detalle", "Detalles", "Facturas", new { id = factura.IdFactura }, new { @class = "btn btn-info btn-sm me-1" })
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        @Html.ActionLink("Eliminar", "Eliminar", "Facturas", new { id = factura.IdFactura }, new { @class = "btn btn-danger btn-sm" })
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

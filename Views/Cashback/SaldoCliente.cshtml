@@ -1,0 +1,33 @@
+﻿using Microsoft.Owin;
+using Owin;
+using Gasolinera.Models;
+using Microsoft.AspNet.Identity;
+
+[assembly: OwinStartup(typeof(Gasolinera.Startup))]
+
+namespace Gasolinera
+{
+    public class Startup
+    {
+        public void Configuration(IAppBuilder app)
+        {
+            app.CreatePerOwinContext<ApplicationDbContext>
+    (ApplicationDbContext.Create);
+    app.CreatePerOwinContext<ApplicationUserManager>
+        (ApplicationUserManager.Create);
+        app.CreatePerOwinContext<ApplicationSignInManager>
+            (ApplicationSignInManager.Create);
+
+            app.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
+            {
+            AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+            LoginPath = new PathString("/Account/Login"),
+            LogoutPath = new PathString("/Account/Logout"),
+            CookieName = "GasolineraAuth",
+            CookieHttpOnly = true,
+            SlidingExpiration = true,
+            ExpireTimeSpan = System.TimeSpan.FromDays(1)
+            });
+            }
+            }
+            }

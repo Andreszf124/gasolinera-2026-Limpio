@@ -1,11 +1,8 @@
-﻿using Gasolinera.Infrastructure.DbContexts;
-using Gasolinera.Infrastructure.Repositories;
-using gasolinera_2026.Models.Entidades;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
+using Gasolinera.Infrastructure.DbContexts;
+using Gasolinera.Models.Entidades;
 
-
-namespace gasolinera_2026.Infrastructure.Repositories
+namespace Gasolinera.Infrastructure.Repositories
 {
     public class CashbackRepository : ICashbackRepository
     {
@@ -29,7 +26,7 @@ namespace gasolinera_2026.Infrastructure.Repositories
 
         public void Actualizar(Cashback cashback)
         {
-            _contexto.Entry(cashback).State = EntityState.Modified;
+            _contexto.Entry(cashback).State = System.Data.Entity.EntityState.Modified;
         }
 
         public void Guardar()

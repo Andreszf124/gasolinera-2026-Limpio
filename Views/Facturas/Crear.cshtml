@@ -1,0 +1,99 @@
+﻿@model Gasolinera.Models.Entidades.Factura
+
+@{
+    ViewBag.Title = "Nueva Factura";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card mt-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Nueva Factura</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeAdvertencia"] != null)
+        {
+            <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+        }
+
+        @using (Html.BeginForm("Crear", "Facturas", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.IdVenta, new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.IdVenta, (SelectList)ViewBag.Ventas, "-- Seleccione una venta --", new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.IdVenta, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.NumeroFactura, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.NumeroFactura, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.NumeroFactura, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.FechaEmision, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.FechaEmision, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", type = "datetime-local", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.FechaEmision, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Total, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Total, new { @class = "form-control", type = "number", step = "0.01", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Total, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>Nota:</strong> El número de factura, fecha y total se generan automáticamente al seleccionar la venta.
+            </div>
+
+            <button type="submit" class="btn btn-success">Generar Factura</button>
+            @Html.ActionLink("Volver", "Index", "Facturas", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#IdVenta').on('change', function() {
+                var idVenta = $(this).val();
+                if (idVenta) {
+                    $.ajax({
+                        url: '@Url.Action("ObtenerDatosVenta", "Facturas")',
+                        type: 'GET',
+                        data: { idVenta: idVenta },
+                        success: function(data) {
+                            if (data.success) {
+                                $('#Total').val(data.total.toFixed(2));
+                            } else {
+                                $('#Total').val('');
+                                alert(data.mensaje);
+                            }
+                        },
+                        error: function() {
+                            alert('Error al obtener los datos de la venta.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

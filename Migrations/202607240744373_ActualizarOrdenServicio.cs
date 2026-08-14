@@ -1,4 +1,4 @@
-﻿namespace gasolinera_2026.Migrations
+﻿namespace Gasolinera.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;

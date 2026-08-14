@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace gasolinera_2026
+namespace Gasolinera
 {
     public class FilterConfig
     {

@@ -2,7 +2,7 @@
 using Gasolinera.Infrastructure.DbContexts;
 using Gasolinera.Infrastructure.Repositories;
 using Gasolinera.Models.Entidades;
-using gasolinera_2026.Models.Entidades;
+using Gasolinera.Models.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;

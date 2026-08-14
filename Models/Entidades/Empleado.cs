@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace gasolinera_2026.Models.Entidades
+namespace Gasolinera.Models.Entidades
 {
     public class Empleado
     {

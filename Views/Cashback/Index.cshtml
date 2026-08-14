@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Cashback";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">Sistema de Cashback</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        <div class="alert alert-info">
+            <strong>Regla de cashback:</strong> Cada ₡200 en compras = 1 punto acumulado.
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Consultar Saldo</h5>
+                        @using (Html.BeginForm("SaldoCliente", "Cashback", FormMethod.Get))
+                        {
+                            <div class="input-group">
+                                @Html.DropDownList("idCliente", (SelectList)ViewBag.Clientes, "-- Seleccione un cliente --", new { @class = "form-select" })
+                                <button type="submit" class="btn btn-primary">Consultar</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
