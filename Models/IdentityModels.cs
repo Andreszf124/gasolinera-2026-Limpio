@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;           // ← AGREGAR ESTO
-using Microsoft.Owin.Security;  // ← AGREGAR ESTO
+using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using Gasolinera.Models.Entidades;
 
 namespace Gasolinera.Models
@@ -42,6 +42,8 @@ namespace Gasolinera.Models
         public DbSet<Factura> Facturas { get; set; }
         public DbSet<Cashback> Cashbacks { get; set; }
         public DbSet<MovimientoCashback> MovimientosCashback { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Vehiculo> Vehiculos { get; set; }
     }
 
     public class ApplicationUserManager : UserManager<ApplicationUser>

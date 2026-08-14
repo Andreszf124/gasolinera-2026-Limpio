@@ -12,14 +12,19 @@
     </div>
 
     <div class="card-body">
+        @if (TempData["MensajeAdvertencia"] != null)
+        {
+            <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+        }
+
         @using (Html.BeginForm("Crear", "Productos", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-
-            if (!ViewData.ModelState.IsValid)
-            {
-                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
-            }
 
             <div class="mb-3">
                 @Html.LabelFor(m => m.Nombre, new { @class = "form-label" })
@@ -40,9 +45,9 @@
             </div>
 
             <div class="mb-3">
-                @Html.LabelFor(m => m.Categoria, new { @class = "form-label" })
-                @Html.DropDownListFor(m => m.Categoria, (List<SelectListItem>)ViewBag.Categorias, "-- Seleccione una categoría --", new { @class = "form-select" })
-                @Html.ValidationMessageFor(m => m.Categoria, "", new { @class = "text-danger" })
+                @Html.LabelFor(m => m.CategoriaId, new { @class = "form-label" })
+                @Html.DropDownListFor(m => m.CategoriaId, (SelectList)ViewBag.CategoriaList, "-- Seleccione una categoría --", new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.CategoriaId, "", new { @class = "text-danger" })
             </div>
 
             <button type="submit" class="btn btn-success">Guardar</button>

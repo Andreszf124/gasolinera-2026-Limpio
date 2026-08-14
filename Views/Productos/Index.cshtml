@@ -55,11 +55,14 @@
                                 <td>@producto.Nombre</td>
                                 <td>₡@producto.Precio.ToString("N2")</td>
                                 <td>@producto.Stock</td>
-                                <td>@producto.Categoria</td>
+                                <td>@(producto.Categoria != null ? producto.Categoria.Nombre : "Sin categoría")</td>
                                 <td>
                                     @Html.ActionLink("Detalle", "Detalles", "Productos", new { id = producto.IdProducto }, new { @class = "btn btn-info btn-sm me-1" })
                                     @Html.ActionLink("Editar", "Editar", "Productos", new { id = producto.IdProducto }, new { @class = "btn btn-warning btn-sm me-1" })
-                                    @Html.ActionLink("Eliminar", "Eliminar", "Productos", new { id = producto.IdProducto }, new { @class = "btn btn-danger btn-sm" })
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        @Html.ActionLink("Eliminar", "Eliminar", "Productos", new { id = producto.IdProducto }, new { @class = "btn btn-danger btn-sm" })
+                                    }
                                 </td>
                             </tr>
                         }

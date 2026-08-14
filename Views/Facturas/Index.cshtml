@@ -6,8 +6,16 @@
 }
 
 <div class="card shadow mt-4">
-    <div class="card-header bg-dark text-white">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h4 class="mb-0">Facturas</h4>
+        @if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
+        {
+            <span class="badge bg-light text-dark">Panel de administración</span>
+        }
+        else
+        {
+            <span class="badge bg-light text-dark">Mis compras</span>
+        }
     </div>
 
     <div class="card-body">
@@ -21,17 +29,12 @@
             <div class="alert alert-danger">@TempData["MensajeError"]</div>
         }
 
-        @if (TempData["MensajeAdvertencia"] != null)
+        @if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
         {
-            <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
+            <div class="mb-3">
+                @Html.ActionLink("Nueva Factura (Compra)", "Crear", "Facturas", null, new { @class = "btn btn-primary" })
+            </div>
         }
-
-        <div class="mb-3">
-            @if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
-            {
-                @Html.ActionLink("Nueva Factura", "Crear", "Facturas", null, new { @class = "btn btn-primary" })
-            }
-        </div>
 
         @if (Model == null || !Model.Any())
         {
@@ -47,8 +50,8 @@
                             <th>Número</th>
                             <th>Fecha</th>
                             <th>Cliente</th>
-                            <th>Venta</th>
                             <th>Total</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -61,12 +64,36 @@
                                 <td>@factura.NumeroFactura</td>
                                 <td>@factura.FechaEmision.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>@(factura.Venta?.Cliente?.NombreCompleto ?? "N/A")</td>
-                                <td>#@factura.IdVenta</td>
                                 <td>₡@factura.Total.ToString("N2")</td>
                                 <td>
-                                    @Html.ActionLink("Detalle", "Detalles", "Facturas", new { id = factura.IdFactura }, new { @class = "btn btn-info btn-sm me-1" })
-                                    @if (User.IsInRole("Administrador"))
+                                    @if (factura.Estado == "Pendiente")
                                     {
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                    }
+                                    else if (factura.Estado == "Aprobada")
+                                    {
+                                        <span class="badge bg-success">Aprobada</span>
+                                    }
+                                    else if (factura.Estado == "Rechazada")
+                                    {
+                                        <span class="badge bg-danger">Rechazada</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@factura.Estado</span>
+                                    }
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Detalle", "Detalles", "Facturas", new { id = factura.IdFactura }, new { @class = "btn btn-info btn-sm me-1" })
+
+                                    @if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
+                                    {
+                                        if (factura.Estado == "Pendiente")
+                                        {
+                                            @Html.ActionLink("Aprobar", "Aprobar", "Facturas", new { id = factura.IdFactura }, new { @class = "btn btn-success btn-sm me-1" })
+                                            @Html.ActionLink("Rechazar", "Rechazar", "Facturas", new { id = factura.IdFactura }, new { @class = "btn btn-danger btn-sm me-1" })
+                                        }
+
                                         @Html.ActionLink("Eliminar", "Eliminar", "Facturas", new { id = factura.IdFactura }, new { @class = "btn btn-danger btn-sm" })
                                     }
                                 </td>

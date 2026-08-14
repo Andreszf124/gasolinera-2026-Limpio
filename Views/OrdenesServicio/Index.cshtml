@@ -1,13 +1,15 @@
-﻿@model IEnumerable<Gasolinera.Models.Entidades.OrdenServicio>
+﻿@using System.Web.Mvc
+@using System.Linq
+@model IEnumerable<Gasolinera.Models.Entidades.OrdenServicio>
 
 @{
-    ViewBag.Title = "Órdenes de Servicio";
+    ViewBag.Title = "Mis Servicios";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="card shadow mt-4">
-    <div class="card-header bg-dark text-white">
-        <h4 class="mb-0">Órdenes de Servicio</h4>
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">🔧 Mis Servicios</h4>
     </div>
 
     <div class="card-body">
@@ -26,11 +28,12 @@
             <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
         }
 
-        @Html.ActionLink("Nueva Orden de Servicio", "Crear", "OrdenesServicio", null, new { @class = "btn btn-primary mb-3" })
+        @Html.ActionLink("Nueva Solicitud", "Crear", "OrdenesServicio", null, new { @class = "btn btn-primary mb-3" })
+        @Html.ActionLink("Mis Vehículos", "Index", "Vehiculos", null, new { @class = "btn btn-secondary mb-3" })
 
         @if (Model == null || !Model.Any())
         {
-            <div class="alert alert-info">No hay órdenes de servicio registradas.</div>
+            <div class="alert alert-info">No tiene solicitudes de servicio registradas.</div>
         }
         else
         {
@@ -39,12 +42,10 @@
                     <thead class="table-dark">
                         <tr>
                             <th>ID</th>
-                            <th>Placa</th>
-                            <th>Marca</th>
                             <th>Vehículo</th>
-                            <th>Cliente</th>
+                            <th>Tipo Servicio</th>
                             <th>Estado</th>
-                            <th>Fecha Entrada</th>
+                            <th>Fecha</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -54,10 +55,8 @@
                         {
                             <tr>
                                 <td>@orden.IdOrdenServicio</td>
-                                <td>@orden.PlacaVehiculo</td>
-                                <td>@orden.MarcaModelo</td>
-                                <td>@orden.TipoVehiculo</td>
-                                <td>@orden.NombreCliente</td>
+                                <td>@(orden.Vehiculo != null ? orden.Vehiculo.Placa : "N/A")</td>
+                                <td>@orden.TipoServicio</td>
                                 <td>
                                     <span class="badge @(orden.Estado == Gasolinera.Common.EstadoOrdenServicio.Pendiente ? "bg-warning" :
                                                        orden.Estado == Gasolinera.Common.EstadoOrdenServicio.EnProgreso ? "bg-info" :
@@ -69,8 +68,10 @@
                                 <td>@orden.FechaEntrada.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>
                                     @Html.ActionLink("Detalle", "Detalles", "OrdenesServicio", new { id = orden.IdOrdenServicio }, new { @class = "btn btn-info btn-sm me-1" })
-                                    @Html.ActionLink("Editar", "Editar", "OrdenesServicio", new { id = orden.IdOrdenServicio }, new { @class = "btn btn-warning btn-sm me-1" })
-                                    @Html.ActionLink("Eliminar", "Eliminar", "OrdenesServicio", new { id = orden.IdOrdenServicio }, new { @class = "btn btn-danger btn-sm" })
+                                    @if (orden.Estado == Gasolinera.Common.EstadoOrdenServicio.Pendiente)
+                                    {
+                                        @Html.ActionLink("Cancelar", "Eliminar", "OrdenesServicio", new { id = orden.IdOrdenServicio }, new { @class = "btn btn-danger btn-sm" })
+                                    }
                                 </td>
                             </tr>
                         }

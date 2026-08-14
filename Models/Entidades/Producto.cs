@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Gasolinera.Common;
 
 namespace Gasolinera.Models.Entidades
@@ -23,6 +24,9 @@ namespace Gasolinera.Models.Entidades
 
         [Required]
         [Display(Name = "Categoría")]
-        public CategoriaProducto Categoria { get; set; }
+        public int CategoriaId { get; set; }
+
+        [ForeignKey("CategoriaId")]
+        public virtual Categoria Categoria { get; set; }
     }
 }

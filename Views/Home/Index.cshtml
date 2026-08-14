@@ -1,33 +1,186 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Gasolinera - Inicio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
-
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+<!-- ========================================== -->
+<!-- HERO BANNER                               -->
+<!-- ========================================== -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="hero-section p-5 rounded" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: white;">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 fw-bold">Gasolinera</h1>
+                    <p class="lead">Tu estación de confianza para combustible y servicios mecánicos.</p>
+                    <hr class="my-4" style="border-color: rgba(255,255,255,0.3);" />
+                    <p>Combustible de calidad, servicio rápido y acumula puntos con cada compra.</p>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <a class="btn btn-light btn-lg mt-2" href="@Url.Action("Registro", "Account")" role="button">Crear cuenta</a>
+                        <a class="btn btn-outline-light btn-lg mt-2 ms-2" href="@Url.Action("Login", "Account")" role="button">Iniciar sesión</a>
+                    }
+                    else
+                    {
+                        <!-- Botones eliminados -->
+                        <!-- Solo mostramos mensaje de bienvenida -->
+                        <p class="mt-3">Bienvenido, @User.Identity.Name</p>
+                    }
+                </div>
+                <div class="col-md-4 text-center d-none d-md-block">
+                    <span style="font-size: 80px;">⛽</span>
+                </div>
+            </div>
+        </div>
     </div>
-</main>
+</div>
+
+<!-- ========================================== -->
+<!-- SERVICIOS Y COMBUSTIBLES                   -->
+<!-- ========================================== -->
+<div class="row mt-5">
+    <div class="col-md-12">
+        <h2 class="text-center mb-4">Nuestros Servicios</h2>
+        <hr class="w-25 mx-auto" />
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm text-center">
+            <div class="card-body">
+                <div class="service-icon mb-3">
+                    <span style="font-size: 48px;">⛽</span>
+                </div>
+                <h5 class="card-title fw-bold">Combustibles</h5>
+                <ul class="list-unstyled">
+                    <li><strong>Diésel</strong></li>
+                    <li><strong>Super</strong></li>
+                    <li><strong>Regular</strong></li>
+                </ul>
+                <p class="text-muted small">Disponible para motos y vehículos</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm text-center">
+            <div class="card-body">
+                <div class="service-icon mb-3">
+                    <span style="font-size: 48px;">🔧</span>
+                </div>
+                <h5 class="card-title fw-bold">Mecánica Rápida</h5>
+                <ul class="list-unstyled">
+                    <li>Cambio de aceite</li>
+                    <li>Revisión de frenos</li>
+                    <li>Cambio de filtros</li>
+                    <li>Diagnóstico rápido</li>
+                </ul>
+                <p class="text-muted small">Servicio express sin cita previa</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm text-center">
+            <div class="card-body">
+                <div class="service-icon mb-3">
+                    <span style="font-size: 48px;">💰</span>
+                </div>
+                <h5 class="card-title fw-bold">Cashback</h5>
+                <ul class="list-unstyled">
+                    <li><strong>200 colones = 1 punto</strong></li>
+                    <li>Acumula con cada compra</li>
+                    <li>Canjea en futuras compras</li>
+                </ul>
+                <p class="text-muted small">Aplica para pagos en efectivo o tarjeta</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- CÓMO FUNCIONA EL CASHBACK                 -->
+<!-- ========================================== -->
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="card shadow-sm border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0 fw-bold">Cómo funciona el Cashback</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="p-3">
+                            <span style="font-size: 32px;">🛒</span>
+                            <p class="mt-2"><strong>Compra</strong></p>
+                            <p class="small text-muted">Realiza tu compra en efectivo o tarjeta</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="p-3">
+                            <span style="font-size: 32px;">📊</span>
+                            <p class="mt-2"><strong>Acumula</strong></p>
+                            <p class="small text-muted">200 colones = 1 punto</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="p-3">
+                            <span style="font-size: 32px;">💳</span>
+                            <p class="mt-2"><strong>Canjea</strong></p>
+                            <p class="small text-muted">1 punto = 200 colones de descuento</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="p-3">
+                            <span style="font-size: 32px;">✅</span>
+                            <p class="mt-2"><strong>Sin caducidad</strong></p>
+                            <p class="small text-muted">Tus puntos no expiran</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- DATOS DE LA GASOLINERA                    -->
+<!-- ========================================== -->
+<div class="row mt-5 mb-4">
+    <div class="col-md-12">
+        <h2 class="text-center mb-4">Datos de la Gasolinera</h2>
+        <hr class="w-25 mx-auto" />
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm bg-light">
+            <div class="card-body py-4">
+                <h3 class="fw-bold text-primary">⛽</h3>
+                <p class="card-text text-muted">3 tipos de combustible</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm bg-light">
+            <div class="card-body py-4">
+                <h3 class="fw-bold text-success">🔧</h3>
+                <p class="card-text text-muted">Servicio mecánico rápido</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm bg-light">
+            <div class="card-body py-4">
+                <h3 class="fw-bold text-warning">💰</h3>
+                <p class="card-text text-muted">Cashback en cada compra</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm bg-light">
+            <div class="card-body py-4">
+                <h3 class="fw-bold text-info">🛒</h3>
+                <p class="card-text text-muted">Venta de repuestos y productos</p>
+            </div>
+        </div>
+    </div>
+</div>

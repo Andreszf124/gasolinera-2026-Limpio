@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="packages\EntityFramework.6.5.2\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.5.2\build\EntityFramework.props')" />
+  <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -148,13 +148,17 @@
     <Compile Include="Common\EnumsCashback.cs" />
     <Compile Include="Common\EstadoOrdenServicio.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AuditoriaController.cs" />
     <Compile Include="Controllers\CashbackController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\FacturasController.cs" />
     <Compile Include="Controllers\PerfilController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrdenesServicioController.cs" />
+    <Compile Include="Controllers\TiendaController.cs" />
+    <Compile Include="Controllers\VehiculosController.cs" />
     <Compile Include="Controllers\VentasController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -194,7 +198,21 @@
     <Compile Include="Migrations\202608140256256_AgregarCashback.Designer.cs">
       <DependentUpon>202608140256256_AgregarCashback.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608141913013_AgregarCategoria.cs" />
+    <Compile Include="Migrations\202608141913013_AgregarCategoria.Designer.cs">
+      <DependentUpon>202608141913013_AgregarCategoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608141936089_ActualizarFacturas.cs" />
+    <Compile Include="Migrations\202608141936089_ActualizarFacturas.Designer.cs">
+      <DependentUpon>202608141936089_ActualizarFacturas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202608142017507_AgregarUsuarioResponsableCashback.cs" />
+    <Compile Include="Migrations\202608142017507_AgregarUsuarioResponsableCashback.Designer.cs">
+      <DependentUpon>202608142017507_AgregarUsuarioResponsableCashback.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Controllers\CategoriasController.cs" />
+    <Compile Include="Models\Entidades\Categoria.cs" />
     <Compile Include="Models\Entidades\Cliente.cs" />
     <Compile Include="Models\Entidades\Cashback.cs" />
     <Compile Include="Models\Entidades\Empleado.cs" />
@@ -202,6 +220,7 @@
     <Compile Include="Models\Entidades\MovimientoCashback.cs" />
     <Compile Include="Models\Entidades\OrdenServicio.cs" />
     <Compile Include="Models\Entidades\Producto.cs" />
+    <Compile Include="Models\Entidades\Vehiculo.cs" />
     <Compile Include="Models\Entidades\Venta.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
@@ -287,9 +306,19 @@
     <Content Include="Views\Perfil\Editar.cshtml" />
     <Content Include="Views\Clientes\index.cshtml" />
     <Content Include="Views\Clientes\Detalles.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Facturas\Aprobar.cshtml" />
+    <Content Include="Views\Facturas\Rechazar.cshtml" />
+    <Content Include="Views\Categorias\Index.cshtml" />
+    <Content Include="Views\Auditoria\Index.cshtml" />
+    <Content Include="Views\Categorias\Crear.cshtml" />
+    <Content Include="Views\Categorias\Editar.cshtml" />
+    <Content Include="Views\Categorias\Eliminar.cshtml" />
+    <Content Include="Views\Tienda\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Vehiculos\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202607232054305_CrearTablaOrdenesServicio.resx">
@@ -309,6 +338,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202608140256256_AgregarCashback.resx">
       <DependentUpon>202608140256256_AgregarCashback.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608141913013_AgregarCategoria.resx">
+      <DependentUpon>202608141913013_AgregarCategoria.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608141936089_ActualizarFacturas.resx">
+      <DependentUpon>202608141936089_ActualizarFacturas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608142017507_AgregarUsuarioResponsableCashback.resx">
+      <DependentUpon>202608142017507_AgregarUsuarioResponsableCashback.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -366,4 +404,12 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\EntityFramework.6.5.2\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.2\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('packages\EntityFramework.6.5.2\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.2\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="packages\EntityFramework.6.5.2\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.5.2\build\EntityFramework.targets')" />
 </Project>

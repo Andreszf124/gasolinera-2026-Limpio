@@ -1,69 +1,66 @@
-﻿@model Gasolinera.Models.Entidades.Factura
-
-@{
-    ViewBag.Title = "Nueva Factura";
+﻿@{
+    ViewBag.Title = "Nueva Compra";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="card mt-4">
+<div class="card shadow mt-4">
     <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Nueva Factura</h4>
+        <h4 class="mb-0">Realizar Compra</h4>
     </div>
 
     <div class="card-body">
-        @if (TempData["MensajeAdvertencia"] != null)
+        @if (TempData["MensajeError"] != null)
         {
-            <div class="alert alert-warning">@TempData["MensajeAdvertencia"]</div>
-        }
-
-        @if (!ViewData.ModelState.IsValid)
-        {
-            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
         }
 
         @using (Html.BeginForm("Crear", "Facturas", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.IdVenta, new { @class = "form-label" })
-                        @Html.DropDownListFor(m => m.IdVenta, (SelectList)ViewBag.Ventas, "-- Seleccione una venta --", new { @class = "form-select" })
-                        @Html.ValidationMessageFor(m => m.IdVenta, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.NumeroFactura, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.NumeroFactura, new { @class = "form-control", @readonly = "readonly" })
-                        @Html.ValidationMessageFor(m => m.NumeroFactura, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Seleccione el Cliente</label>
+                @Html.DropDownList("idCliente", (SelectList)ViewBag.Clientes, "-- Seleccione un cliente --", new { @class = "form-select", required = "required" })
             </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.FechaEmision, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.FechaEmision, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", type = "datetime-local", @readonly = "readonly" })
-                        @Html.ValidationMessageFor(m => m.FechaEmision, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        @Html.LabelFor(m => m.Total, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Total, new { @class = "form-control", type = "number", step = "0.01", @readonly = "readonly" })
-                        @Html.ValidationMessageFor(m => m.Total, "", new { @class = "text-danger" })
-                    </div>
+            <div class="mb-3">
+                <label class="form-label">Productos</label>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Seleccionar</th>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var producto in ViewBag.Productos)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="productoIds" value="@producto.IdProducto" class="producto-checkbox" />
+                                    </td>
+                                    <td>@producto.Nombre</td>
+                                    <td>₡@producto.Precio.ToString("N2")</td>
+                                    <td>@producto.Stock</td>
+                                    <td>
+                                        <input type="number" name="cantidades" class="form-control cantidad-input" style="width:80px;" min="1" max="@producto.Stock" value="1" disabled />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <div class="alert alert-info">
-                <strong>Nota:</strong> El número de factura, fecha y total se generan automáticamente al seleccionar la venta.
+                <strong>Total estimado:</strong> <span id="totalEstimado">₡0.00</span>
             </div>
 
-            <button type="submit" class="btn btn-success">Generar Factura</button>
+            <button type="submit" class="btn btn-success">Realizar Compra</button>
             @Html.ActionLink("Volver", "Index", "Facturas", null, new { @class = "btn btn-secondary" })
         }
     </div>
@@ -72,28 +69,34 @@
 @section scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script type="text/javascript">
-        $(document).ready(function() {
-            $('#IdVenta').on('change', function() {
-                var idVenta = $(this).val();
-                if (idVenta) {
-                    $.ajax({
-                        url: '@Url.Action("ObtenerDatosVenta", "Facturas")',
-                        type: 'GET',
-                        data: { idVenta: idVenta },
-                        success: function(data) {
-                            if (data.success) {
-                                $('#Total').val(data.total.toFixed(2));
-                            } else {
-                                $('#Total').val('');
-                                alert(data.mensaje);
-                            }
-                        },
-                        error: function() {
-                            alert('Error al obtener los datos de la venta.');
-                        }
-                    });
+        $(document).ready(function () {
+            // Habilitar/deshabilitar cantidad según checkbox
+            $('.producto-checkbox').on('change', function () {
+                var cantidadInput = $(this).closest('tr').find('.cantidad-input');
+                if ($(this).is(':checked')) {
+                    cantidadInput.prop('disabled', false);
+                } else {
+                    cantidadInput.prop('disabled', true);
+                    cantidadInput.val(1);
                 }
+                calcularTotal();
             });
+
+            // Calcular total al cambiar cantidades
+            $('.cantidad-input').on('input', function () {
+                calcularTotal();
+            });
+
+            function calcularTotal() {
+                var total = 0;
+                $('.producto-checkbox:checked').each(function () {
+                    var row = $(this).closest('tr');
+                    var precio = parseFloat(row.find('td:eq(2)').text().replace('₡', '').replace(/,/g, ''));
+                    var cantidad = parseInt(row.find('.cantidad-input').val()) || 0;
+                    total += precio * cantidad;
+                });
+                $('#totalEstimado').text('₡' + total.toFixed(2));
+            }
         });
     </script>
 }

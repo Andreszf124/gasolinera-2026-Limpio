@@ -1,0 +1,98 @@
+﻿@model IEnumerable<Gasolinera.Models.Entidades.Producto>
+
+@{
+    ViewBag.Title = "Tienda";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">🛒 Tienda - Productos Disponibles</h4>
+    </div>
+
+    <div class="card-body">
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success">@TempData["MensajeExito"]</div>
+        }
+
+        @if (TempData["MensajeError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["MensajeError"]</div>
+        }
+
+        <div class="alert alert-info">
+            <strong>💡 Acumula puntos:</strong> Por cada ₡200 en compras, ganas 1 punto.
+            Revisa tus puntos en <a href="@Url.Action("Index", "Perfil")">Mi Perfil</a>.
+        </div>
+
+        <!-- PUNTOS DISPONIBLES -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">💰 Puntos Disponibles</h5>
+                        <h3>@ViewBag.PuntosDisponibles</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCTOS -->
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info">No hay productos disponibles en este momento.</div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var producto in Model)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">@producto.Nombre</h5>
+                                <p class="card-text">
+                                    <strong>Precio:</strong> ₡@producto.Precio.ToString("N2")<br />
+                                    <strong>Stock:</strong> @producto.Stock<br />
+                                    <span class="badge bg-secondary">@(producto.Categoria?.Nombre ?? "Sin categoría")</span>
+                                </p>
+                                <p class="card-text small text-muted">
+                                    ⭐ Ganas @(Math.Floor(producto.Precio / 200)) puntos por unidad
+                                </p>
+                            </div>
+                            <div class="card-footer bg-light">
+                                @using (Html.BeginForm("Comprar", "Tienda", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("idProducto", producto.IdProducto)
+
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <input type="number" name="cantidad" class="form-control" min="1" max="@producto.Stock" value="1" required />
+                                        </div>
+                                        <div class="col-8">
+                                            <select name="metodoPago" class="form-select" required>
+                                                <option value="">Método de pago</option>
+                                                <option value="Efectivo">Efectivo</option>
+                                                <option value="Tarjeta">Tarjeta</option>
+                                                <option value="Puntos">Puntos</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 mt-2">
+                                            <button type="submit" class="btn btn-success w-100">Comprar</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="mt-3">
+            @Html.ActionLink("Ver mis facturas", "Index", "Facturas", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+</div>

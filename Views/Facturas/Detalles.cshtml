@@ -5,9 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="card mt-4">
-    <div class="card-header bg-info text-white">
-        <h4 class="mb-0">Detalle de Factura #@Model.IdFactura</h4>
+<div class="card shadow mt-4">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Detalle de Factura @Model.NumeroFactura</h4>
+        <span class="badge @(Model.Estado == "Pendiente" ? "bg-warning text-dark" : Model.Estado == "Aprobada" ? "bg-success" : "bg-danger")">
+            @Model.Estado
+        </span>
     </div>
 
     <div class="card-body">
@@ -15,50 +18,44 @@
             <div class="col-md-6">
                 <table class="table table-bordered">
                     <tbody>
-                        <tr>
-                            <th>Número de Factura</th>
-                            <td>@Model.NumeroFactura</td>
-                        </tr>
-                        <tr>
-                            <th>Fecha de Emisión</th>
-                            <td>@Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")</td>
-                        </tr>
-                        <tr>
-                            <th>Venta</th>
-                            <td>#@Model.IdVenta</td>
-                        </tr>
-                        <tr>
-                            <th>Total</th>
-                            <td><strong>₡@Model.Total.ToString("N2")</strong></td>
-                        </tr>
+                        <tr><th>Número</th><td>@Model.NumeroFactura</td></tr>
+                        <tr><th>Fecha de Emisión</th><td>@Model.FechaEmision.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                        <tr><th>Total</th><td><strong>₡@Model.Total.ToString("N2")</strong></td></tr>
                     </tbody>
                 </table>
             </div>
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header bg-secondary text-white">
-                        <h5 class="mb-0">Información del Cliente</h5>
+                        <h6 class="mb-0">Información del Cliente</h6>
                     </div>
                     <div class="card-body">
-                        @if (Model.Venta != null && Model.Venta.Cliente != null)
-                        {
-                            <p><strong>Nombre:</strong> @Model.Venta.Cliente.NombreCompleto</p>
-                            <p><strong>Correo:</strong> @Model.Venta.Cliente.Correo</p>
-                            <p><strong>Teléfono:</strong> @Model.Venta.Cliente.Telefono</p>
-                        }
-                        else
-                        {
-                            <p>No hay información del cliente disponible.</p>
-                        }
+                        <p><strong>Nombre:</strong> @(Model.Venta?.Cliente?.NombreCompleto ?? "N/A")</p>
+                        <p><strong>Correo:</strong> @(Model.Venta?.Cliente?.Correo ?? "N/A")</p>
+                        <p><strong>Teléfono:</strong> @(Model.Venta?.Cliente?.Telefono ?? "N/A")</p>
                     </div>
                 </div>
             </div>
         </div>
 
+        @if (!string.IsNullOrEmpty(Model.Observaciones))
+        {
+            <div class="mt-3">
+                <h6>Observaciones</h6>
+                <p class="border p-2 bg-light">@Model.Observaciones</p>
+            </div>
+        }
+
         <div class="mt-3">
             @Html.ActionLink("Volver", "Index", "Facturas", null, new { @class = "btn btn-secondary" })
-            @if (User.IsInRole("Administrador"))
+
+            @if (User.IsInRole("Administrador") || User.IsInRole("Moderador"))
             {
+                if (Model.Estado == "Pendiente")
+                {
+                    @Html.ActionLink("Aprobar", "Aprobar", "Facturas", new { id = Model.IdFactura }, new { @class = "btn btn-success" })
+                    @Html.ActionLink("Rechazar", "Rechazar", "Facturas", new { id = Model.IdFactura }, new { @class = "btn btn-danger" })
+                }
                 @Html.ActionLink("Eliminar", "Eliminar", "Facturas", new { id = Model.IdFactura }, new { @class = "btn btn-danger" })
             }
         </div>

@@ -27,6 +27,8 @@ namespace Gasolinera.Models.Entidades
         [Required]
         public DateTime FechaMovimiento { get; set; }
 
+        public string UsuarioResponsableId { get; set; }
+
         [StringLength(500)]
         public string Observaciones { get; set; }
 

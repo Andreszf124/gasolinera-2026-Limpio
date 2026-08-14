@@ -6,9 +6,11 @@ using Gasolinera.Common;
 using Gasolinera.Infrastructure.DbContexts;
 using Gasolinera.Infrastructure.Repositories;
 using Gasolinera.Models.Entidades;
+using Microsoft.AspNet.Identity;
 
 namespace Gasolinera.Controllers
 {
+    [Authorize]
     public class OrdenesServicioController : Controller
     {
         private readonly IOrdenServicioRepository _repositorio;
@@ -20,23 +22,63 @@ namespace Gasolinera.Controllers
             _repositorio = new OrdenServicioRepository(_contexto);
         }
 
+        // ========================================== //
+        // LISTA DE ÓRDENES                           //
+        // ========================================== //
         public ActionResult Index()
         {
+            var userId = User.Identity.GetUserId();
+            var cliente = _contexto.Clientes.FirstOrDefault(c => c.Correo == User.Identity.Name);
+            var idCliente = cliente?.IdCliente ?? 0;
+
             var ordenes = _repositorio.ObtenerTodos();
+
+            // Si no es Admin, Moderador o Mecánico, solo ve sus propias órdenes
+            if (!User.IsInRole("Administrador") && !User.IsInRole("Moderador") && !User.IsInRole("Mecánico"))
+            {
+                var vehiculosIds = _contexto.Vehiculos
+                    .Where(v => v.IdCliente == idCliente)
+                    .Select(v => v.IdVehiculo)
+                    .ToList();
+
+                ordenes = ordenes.Where(o => vehiculosIds.Contains(o.IdVehiculo)).ToList();
+            }
+
             return View(ordenes);
         }
 
+        // ========================================== //
+        // CREAR ORDEN DE SERVICIO                    //
+        // ========================================== //
         [HttpGet]
         public ActionResult Crear()
         {
+            var cliente = ObtenerCliente();
+            if (cliente == null)
+            {
+                TempData["MensajeError"] = "No se encontró un cliente asociado a su cuenta.";
+                return RedirectToAction("Index");
+            }
+
+            var vehiculos = _contexto.Vehiculos
+                .Where(v => v.IdCliente == cliente.IdCliente)
+                .ToList();
+
+            if (!vehiculos.Any())
+            {
+                TempData["MensajeAdvertencia"] = "Primero debe registrar un vehículo.";
+                return RedirectToAction("Index", "Vehiculos");
+            }
+
+            ViewBag.Vehiculos = new SelectList(vehiculos, "IdVehiculo", "Placa");
+            ViewBag.TiposServicio = ObtenerTiposServicio();
             ViewBag.Empleados = ObtenerEmpleados();
-            ViewBag.Estados = ObtenerEstados();
-            ViewBag.TiposVehiculo = ObtenerTiposVehiculo();
 
             return View(new OrdenServicio
             {
                 FechaEntrada = DateTime.Now,
-                Estado = EstadoOrdenServicio.Pendiente
+                Estado = EstadoOrdenServicio.Pendiente,
+                NombreCliente = cliente.NombreCompleto
             });
         }
 
@@ -46,19 +88,27 @@ namespace Gasolinera.Controllers
         {
             if (!ModelState.IsValid)
             {
+                var cliente = ObtenerCliente();
+                ViewBag.Vehiculos = new SelectList(_contexto.Vehiculos.Where(v => v.IdCliente == cliente.IdCliente), "IdVehiculo", "Placa");
+                ViewBag.TiposServicio = ObtenerTiposServicio();
                 ViewBag.Empleados = ObtenerEmpleados();
-                ViewBag.Estados = ObtenerEstados();
-                ViewBag.TiposVehiculo = ObtenerTiposVehiculo();
                 TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
                 return View(ordenServicio);
             }
 
+            // Asignar nombre de cliente
+            var cliente = ObtenerCliente();
+            ordenServicio.NombreCliente = cliente?.NombreCompleto ?? User.Identity.Name;
+
             _repositorio.Agregar(ordenServicio);
 
-            TempData["MensajeExito"] = "Orden de servicio registrada correctamente.";
+            TempData["MensajeExito"] = "Orden de servicio registrada correctamente. Un moderador la revisará pronto.";
             return RedirectToAction("Index");
         }
 
+        // ========================================== //
+        // DETALLES DE ORDEN                          //
+        // ========================================== //
         [HttpGet]
         public ActionResult Detalles(int id)
         {
@@ -70,105 +120,60 @@ namespace Gasolinera.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(orden);
-        }
-
-        [HttpGet]
-        public ActionResult Editar(int id)
-        {
-            var orden = _repositorio.ObtenerPorId(id);
-
-            if (orden == null)
+            // Verificar permisos
+            if (!User.IsInRole("Administrador") && !User.IsInRole("Moderador") && !User.IsInRole("Mecánico"))
             {
-                TempData["MensajeError"] = "La orden de servicio no existe.";
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.Empleados = ObtenerEmpleados();
-            ViewBag.Estados = ObtenerEstados();
-            ViewBag.TiposVehiculo = ObtenerTiposVehiculo();
-
-            return View(orden);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Editar(OrdenServicio ordenServicio)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Empleados = ObtenerEmpleados();
-                ViewBag.Estados = ObtenerEstados();
-                ViewBag.TiposVehiculo = ObtenerTiposVehiculo();
-                TempData["MensajeAdvertencia"] = "Revise los datos del formulario.";
-                return View(ordenServicio);
-            }
-
-            _repositorio.Actualizar(ordenServicio);
-
-            TempData["MensajeExito"] = "Orden de servicio actualizada correctamente.";
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public ActionResult Eliminar(int id)
-        {
-            var orden = _repositorio.ObtenerPorId(id);
-
-            if (orden == null)
-            {
-                TempData["MensajeError"] = "La orden de servicio no existe.";
-                return RedirectToAction("Index");
+                var cliente = ObtenerCliente();
+                var vehiculo = _contexto.Vehiculos.FirstOrDefault(v => v.IdVehiculo == orden.IdVehiculo);
+                if (vehiculo == null || vehiculo.IdCliente != cliente?.IdCliente)
+                {
+                    TempData["MensajeError"] = "No tiene permisos para ver esta orden de servicio.";
+                    return RedirectToAction("Index");
+                }
             }
 
             return View(orden);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [ActionName("Eliminar")]
-        public ActionResult EliminarConfirmado(int id)
+        // ========================================== //
+        // MÉTODOS PRIVADOS                           //
+        // ========================================== //
+        private Cliente ObtenerCliente()
         {
-            var orden = _repositorio.ObtenerPorId(id);
-
-            if (orden == null)
-            {
-                TempData["MensajeError"] = "La orden de servicio no existe.";
-                return RedirectToAction("Index");
-            }
-
-            _repositorio.Eliminar(orden);
-
-            TempData["MensajeExito"] = "Orden de servicio eliminada correctamente.";
-            return RedirectToAction("Index");
+            return _contexto.Clientes.FirstOrDefault(c => c.Correo == User.Identity.Name);
         }
 
         private List<SelectListItem> ObtenerEmpleados()
         {
-            List<SelectListItem> empleados;
-
-            if (_contexto.Empleados.Any())
-            {
-                empleados = _contexto.Empleados
-                    .Select(e => new SelectListItem
-                    {
-                        Value = e.IdEmpleado.ToString(),
-                        Text = e.NombreCompleto + " - " + e.Cargo + " (ID: " + e.IdEmpleado + ")"
-                    })
-                    .ToList();
-            }
-            else
-            {
-                empleados = new List<SelectListItem>
-        {
-            new SelectListItem { Value = "1", Text = "Juan Pérez - Mecánico" },
-            new SelectListItem { Value = "2", Text = "María López - Mecánico" },
-            new SelectListItem { Value = "3", Text = "Pedro Gómez - Mecánico" }
-        };
-            }
+            var empleados = _contexto.Empleados
+                .Select(e => new SelectListItem
+                {
+                    Value = e.IdEmpleado.ToString(),
+                    Text = e.NombreCompleto + " - " + e.Cargo
+                })
+                .ToList();
 
             empleados.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un mecánico --" });
-            return empleados; // <--- ESTE RETURN ES EL QUE FALTABA
+            return empleados;
+        }
+
+        private List<SelectListItem> ObtenerTiposServicio()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Cambio de Aceite", Value = "Cambio de Aceite" },
+                new SelectListItem { Text = "Revisión de Frenos", Value = "Revisión de Frenos" },
+                new SelectListItem { Text = "Cambio de Filtros", Value = "Cambio de Filtros" },
+                new SelectListItem { Text = "Diagnóstico General", Value = "Diagnóstico General" },
+                new SelectListItem { Text = "Alineación y Balanceo", Value = "Alineación y Balanceo" },
+                new SelectListItem { Text = "Revisión de Motor", Value = "Revisión de Motor" },
+                new SelectListItem { Text = "Servicio de Suspensión", Value = "Servicio de Suspensión" },
+                new SelectListItem { Text = "Sistema Eléctrico", Value = "Sistema Eléctrico" },
+                new SelectListItem { Text = "Servicio de Transmisión", Value = "Servicio de Transmisión" },
+                new SelectListItem { Text = "Revisión de Aire Acondicionado", Value = "Revisión de Aire Acondicionado" },
+                new SelectListItem { Text = "Escaneo Computarizado", Value = "Escaneo Computarizado" },
+                new SelectListItem { Text = "Otro", Value = "Otro" }
+            };
         }
 
         private List<SelectListItem> ObtenerEstados()
@@ -185,16 +190,13 @@ namespace Gasolinera.Controllers
             return estados;
         }
 
-        private List<SelectListItem> ObtenerTiposVehiculo()
+        protected override void Dispose(bool disposing)
         {
-            List<SelectListItem> tipos = new List<SelectListItem>();
-
-            tipos.Add(new SelectListItem { Text = "Carro", Value = "Carro" });
-            tipos.Add(new SelectListItem { Text = "Moto", Value = "Moto" });
-            tipos.Add(new SelectListItem { Text = "Camión", Value = "Camión" });
-
-            tipos.Insert(0, new SelectListItem { Value = "", Text = "-- Seleccione un tipo de vehículo --" });
-            return tipos;
+            if (disposing)
+            {
+                _contexto.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

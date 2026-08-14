@@ -1,0 +1,38 @@
+﻿@model Gasolinera.Models.Entidades.Categoria
+
+@{
+    ViewBag.Title = "Eliminar Categoría";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">Eliminar Categoría</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <strong>¿Está seguro de que desea eliminar esta categoría?</strong>
+            <br />
+            <span class="text-muted">Esta acción no se puede deshacer.</span>
+        </div>
+
+        <table class="table table-bordered">
+            <tbody>
+                <tr><th>ID</th><td>@Model.CategoriaId</td></tr>
+                <tr><th>Nombre</th><td>@Model.Nombre</td></tr>
+                <tr><th>Descripción</th><td>@Model.Descripcion</td></tr>
+                <tr><th>Estado</th><td>@(Model.Activa ? "Activa" : "Inactiva")</td></tr>
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Eliminar", "Categorias", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.CategoriaId)
+
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            @Html.ActionLink("Cancelar", "Index", "Categorias", null, new { @class = "btn btn-secondary" })
+        }
+    </div>
+</div>

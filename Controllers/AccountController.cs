@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Gasolinera.Models;
+using Gasolinera.Infrastructure.DbContexts;
 
 namespace Gasolinera.Controllers
 {
@@ -24,6 +25,9 @@ namespace Gasolinera.Controllers
             private set => _signInManager = value;
         }
 
+        // ========================================== //
+        // LOGIN                                      //
+        // ========================================== //
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
@@ -53,6 +57,9 @@ namespace Gasolinera.Controllers
             return View(model);
         }
 
+        // ========================================== //
+        // REGISTRO                                   //
+        // ========================================== //
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Registro()
@@ -82,6 +89,24 @@ namespace Gasolinera.Controllers
                 await UserManager.AddToRoleAsync(user.Id, "Usuario");
                 await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
+                try
+                {
+                    var contexto = new GasolineraContext();
+                    var nuevoCliente = new Gasolinera.Models.Entidades.Cliente
+                    {
+                        NombreCompleto = model.NombreCompleto,
+                        Correo = model.Correo,
+                        Telefono = "",
+                        Direccion = ""
+                    };
+                    contexto.Clientes.Add(nuevoCliente);
+                    contexto.SaveChanges();
+                }
+                catch
+                {
+                    // Si falla, continuar
+                }
+
                 TempData["MensajeExito"] = "Registro exitoso. Bienvenido al sistema.";
                 return RedirectToAction("Index", "Home");
             }
@@ -92,7 +117,9 @@ namespace Gasolinera.Controllers
             return View(model);
         }
 
-   
+        // ========================================== //
+        // CERRAR SESIÓN                              //
+        // ========================================== //
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CerrarSesion()

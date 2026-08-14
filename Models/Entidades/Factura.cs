@@ -22,6 +22,16 @@ namespace Gasolinera.Models.Entidades
         [Required]
         public decimal Total { get; set; }
 
+        [Required]
+        [StringLength(20)]
+        public string Estado { get; set; } = "Pendiente";
+
+        [StringLength(500)]
+        public string Observaciones { get; set; }
+
+        public DateTime? FechaAprobacion { get; set; }
+        public string AprobadoPorId { get; set; }
+
         [ForeignKey("IdVenta")]
         public virtual Venta Venta { get; set; }
     }
